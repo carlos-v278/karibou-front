@@ -1,5 +1,4 @@
 <script setup lang="ts" >
-
 import MyLogin from 'src/features/authentication/components/MyLogin.vue';
 </script>
 
