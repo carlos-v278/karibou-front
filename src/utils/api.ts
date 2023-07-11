@@ -10,6 +10,7 @@ import { useStoreAuth } from 'src/features/authentication/utils/user';
   }
 );
 // Request interceptor for API calls
+
 ApiInstance.interceptors.request.use(
   async config => {
     const token = useStoreAuth().token

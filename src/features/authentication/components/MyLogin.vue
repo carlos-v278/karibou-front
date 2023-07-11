@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import {ref} from 'vue'
-import { ApiInstance } from 'src/utils/api'
-import { useStoreAuth } from '../utils/user';
 import { UserAuth } from 'src/utils/interfaces'
 import { useRouter } from 'vue-router'
 import {userConnect} from 'src/features/authentication/utils/connect';
+import {notify} from 'src/utils/utils';
 
-const storeAuth = useStoreAuth();
 const router = useRouter();
 
 // login form data
@@ -16,9 +14,17 @@ const user = ref<UserAuth>({
 })
 
 //submit the login form
-function onSubmit():void
+async function onSubmit():Promise<void>
 {
-  userConnect(user.value);
+  const isUserConnect = await userConnect(user.value);
+  if(isUserConnect){
+    router.push({
+      name: 'dwelling',
+    })
+    notify(`Bienvenue ${user.value.email}`,'positive')
+  } else{
+    notify('Email ou Mot de passe incorrect','negative')
+  }
 }
 
 
@@ -26,35 +32,48 @@ function onSubmit():void
 
 <template>
   <div class="login-component">
+    <h2 class="form-title">Identifiants de connexion</h2>
     <q-form
       @submit="onSubmit"
-      class="q-gutter-md"
     >
       <q-input
+        class="row-input"
         filled
         type="email"
         v-model="user.email"
         label="Email"
-        hint="Your email"
         lazy-rules
         :rules="[ val => val && val.length > 0 || 'Please type something']"
       />
 
       <q-input
+        class="row-input"
         filled
         type="password"
         v-model="user.password"
         label="Password"
       />
-
-      <div>
-        <q-btn label="connexion" type="submit" color="primary"/>
-      </div>
+      <q-btn  class="row-input btn-cta" label="connexion" type="submit" color="primary"/>
     </q-form>
   </div>
 </template>
 
-<style class="scss" scoped>
+<style lang="scss" scoped>
+.login-component{
+  max-width: 351px;
+  margin: 0 auto;
+  .form-title{
+    text-align: center;
+    font-size: var(--fs-500);
+    font-weight: 400;
+    color: $secondary;
+  }
+  .row-input{
+    width: 100%;
+
+  }
+
+}
 
 
 </style>

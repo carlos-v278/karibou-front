@@ -11,11 +11,16 @@
 // It's highly recommended to change the default colors
 // to match your app's branding.
 // Tip: Use the "Theme Builder" on Quasar's documentation website.
+@import "https://use.typekit.net/qgs4xdo.css";
+@import "https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap";
+
+$primary-font: 'Poppins', sans-serif;
+$secondary-font: 'peachy-keen-jf', sans-serif;
 
 $primary   : #FF8552;
 $secondary : #363636;
-$grey-dark : #F3F3F3;
-$grey-light : #707070;
+$grey-dark : #707070;
+$grey-light : #F3F3F3;
 
 $dark      : #1D1D1D;
 $dark-page : #121212;
@@ -24,3 +29,45 @@ $positive  : #21BA45;
 $negative  : #C10015;
 $info      : #31CCEC;
 $warning   : #F2C037;
+
+
+:root{
+  --fs-800: 18px;
+  --fs-700: 22px;
+  --fs-600: 21px;
+  --fs-500: 18px;
+  --fs-400: 16px;
+  --fs-300: 34px;
+  --fs-200: 34px;
+  --fs-100: 34px;
+}
+
+@mixin media-min($_min-width) {
+  @media screen and (min-width: $_min-width) {
+    &{ @content; }
+  }
+}
+/* Using SCSS variables to store breakpoints */
+
+// @media to use with scss
+
+#q-app{
+  font-family: $primary-font;
+  @include media-min(768px) {
+
+  }
+}
+
+@media screen and (min-width: 781px) {
+  :root{
+    --fs-800: 28px;
+    --fs-700: 22px;
+    --fs-600: 21px;
+    --fs-500: 18px;
+    --fs-400: 16px;
+    --fs-300: 34px;
+    --fs-200: 34px;
+    --fs-100: 34px;
+  }
+}
+
