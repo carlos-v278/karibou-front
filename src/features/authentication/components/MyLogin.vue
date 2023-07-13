@@ -4,8 +4,11 @@ import { UserAuth } from 'src/utils/interfaces'
 import { useRouter } from 'vue-router'
 import {userConnect} from 'src/features/authentication/utils/connect';
 import {notify} from 'src/utils/utils';
+import { useQuasar } from 'quasar'
 
+const $q = useQuasar()
 const router = useRouter();
+
 
 // login form data
 const user = ref<UserAuth>({
@@ -16,8 +19,11 @@ const user = ref<UserAuth>({
 //submit the login form
 async function onSubmit():Promise<void>
 {
+  $q.loading.show()
   const isUserConnect = await userConnect(user.value);
+  $q.loading.hide()
   if(isUserConnect){
+
     router.push({
       name: 'dwelling',
     })

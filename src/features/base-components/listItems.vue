@@ -13,7 +13,7 @@ const { listItems } = toRefs(props);
 </script>
 <template>
 <div v-for="(item,index) in listItems"  :key="index" class="list-item" >
-  <slot name="item"></slot>
+  <slot name="item" v-bind="item"></slot>
 </div>
 </template>
 

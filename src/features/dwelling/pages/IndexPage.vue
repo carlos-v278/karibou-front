@@ -4,37 +4,40 @@ import ListItem from 'src/features/base-components/ListItem.vue';
 import ListItems from 'src/features/base-components/listItems.vue';
 import ToggleBtn from 'src/features/base-components/ToggleBtn.vue';
 import MyAvatar from 'src/features/base-components/MyAvatar.vue';
+import KaribouLoading from 'src/features/base-components/KaribouLoading.vue';
 import {ApiInstance} from 'src/utils/api';
-import {User, Building, Apartment,} from 'src/utils/interfaces';
+import { Building, Apartment,} from 'src/utils/interfaces';
+import { useQuasar } from 'quasar'
 
-//lifes cycles
+const $q = useQuasar()
+
+//lifes cycles hooks
 onBeforeMount( ():void => {
   getApartments();
 })
 
+//images slider
 const slide = ref(1)
 
+//current choice for the toggle of building or apartments
+const currentChoice = ref('imeuble')
 //function get emits from switch components
 function getCurrentChoice(choice:string):void
 {
-  console.log(choice,'outside')
+  currentChoice.value = choice
+
 }
 
-
 //building of the user
-let userBuildings = reactive<Building[]>([
-
-])
+let userBuildings = reactive<Building[]>([])
 
 //Apartments of the user
-let userApartments = reactive<Apartment[]>([
+let userApartments = reactive<Apartment[]>([])
 
-])
-
-
-
+//Get Appartments and building request from the APi
 function getApartments():void
 {
+  $q.loading.show()
   ApiInstance.get('/api/apartments')
     .then((response) => {
       const result = response.data;
@@ -42,46 +45,85 @@ function getApartments():void
       result.forEach((apart:any )=>{
         userBuildings.push(apart.building )
       })
-      console.log(userBuildings,'before')
-      console.log(result,'la');
+      $q.loading.hide()
     })
     .catch((error) => {
       console.log('error', error);
+      $q.loading.hide()
     })
 
 }
+
 </script>
 <template>
   <q-page class="page_container row  justify-center">
+    <KaribouLoading></KaribouLoading>
     <div class="left ">
       <div class="left_header">
         <MyAvatar class="avatar"></MyAvatar>
       </div>
-      <ToggleBtn one-txt="Imeubles" two-txt="Appartements" @current-choice="getCurrentChoice">
+      <ToggleBtn one-txt="imeuble" two-txt="appartement" @current-choice="getCurrentChoice">
 
       </ToggleBtn>
       <div class="list-items">
-        <ListItems :list-items="userBuildings">
-          <template v-slot:item>
+          <!--        Building lists-->
+        <ListItems v-if="currentChoice === 'imeuble'" :list-items="userBuildings">
+          <template #item="{street,number,zipcode, city}">
             <ListItem >
-              <template v-slot:icons>
+              <template #icons>
                 <div class="icon row items-center justify-center">
                   <q-icon name="fa-solid fa-building"  round size="md" color="primary"/>
                 </div>
               </template>
-              <template v-slot:infos>
-          <span
-            style="font-size: 13px; font-weight: 600;"
-            class="item-title"
-          >
-            7 Rue du Merignac
-          </span>
+              <template #infos>
+                <span
+                  style="font-size: 13px; font-weight: 600;"
+                  class="item-title"
+                >
+                  {{number}} {{street}}, {{zipcode}} {{city}}
+                </span>
                 <span
                   style="font-size: 13px; font-weight: 300;"
                   class="items-baseline"
                 >
-            Résidence
-          </span>
+                  Résidence
+                </span>
+              </template>
+              <template v-slot:actions>
+                <q-btn
+                  round
+                  unelevated
+                  color="white"
+                  size="md"
+                  text-color="primary"
+                  icon="fa-solid fa-angle-right"
+                />
+              </template>
+            </ListItem>
+          </template>
+        </ListItems>
+        <!--        apartments lists-->
+        <ListItems v-else :list-items="userApartments">
+          <template #item="{number,floor}">
+            <ListItem >
+              <template #icons>
+                <div class="icon row items-center justify-center">
+                  <q-icon name="fa-solid fa-building-user"  round size="md" color="primary"/>
+                </div>
+              </template>
+              <template #infos>
+                <span
+                  style="font-size: 13px; font-weight: 600;"
+                  class="item-title"
+                >
+                  Appartment N°{{number}} , étage N°{{floor}}
+                </span>
+                <span
+                  style="font-size: 13px; font-weight: 300;"
+                  class="items-baseline"
+                >
+                  Appartement
+                </span>
               </template>
               <template v-slot:actions>
                 <q-btn
