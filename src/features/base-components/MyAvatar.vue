@@ -1,5 +1,20 @@
 <script setup lang="ts">
+import {onBeforeMount, ref} from 'vue'
+import {userService} from 'src/_services';
+//boolean to activate the floating avatar options
+const  userOptions = ref(false)
+//function wich help to activate the floating avatar options
 
+onBeforeMount(()=>{
+  getProfileInfos();
+})
+
+function getProfileInfos():void{
+  userService.getUserProfile()
+    .then(res =>{
+      console.log(res);
+    })
+}
 
 </script>
 <template>
@@ -8,8 +23,8 @@
     <img src="https://cdn.quasar.dev/img/avatar.png" alt="personal-avatar-image">
   </div>
   <div class="floating-info">
-    <q-icon class="arrow" name="fa-solid fa-angle-down"  round size="xs" color="primary"/>
-    <div class="my-avatar-options">
+    <q-icon @click="userOptions = !userOptions" :class="{arrow: userOptions}" name="fa-solid fa-angle-down"  round size="xs" color="primary"/>
+    <div class="my-avatar-options" v-if="userOptions">
       <ul class="options">
         <li class="option">
           Informations personelles
@@ -60,10 +75,10 @@
     }
   }
   .floating-info{
-    &:hover .my-avatar-options{
-      display: block;
+    .my-avatar-options{
+      display: block !important;
     }
-    &:hover .arrow{
+    .arrow{
       transform: rotate(180deg);
     }
     .arrow{

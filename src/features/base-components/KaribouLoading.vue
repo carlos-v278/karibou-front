@@ -8,7 +8,9 @@
             <div class="logo">
               <img src="@pub/images/logo.svg" alt="logo-karibou">
             </div>
-           <span>Message ici</span>
+           <span id="animation">
+              <q-spinner-dots size="7em" color="orange" />
+           </span>
         </div>
     </div>
  </div>
@@ -30,6 +32,10 @@
     align-items: center;
     justify-content: center;
     .loading-element{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       .logo{
         width: 120px;
         img{
@@ -37,6 +43,10 @@
           height: 100%;
           object-fit: cover;
         }
+      }
+      .animation{
+        display: flex;
+        justify-content: center;
       }
     }
   }

@@ -16,7 +16,7 @@ export function getLocalToken():boolean{
 //function for connect the user
 export const userConnect = async (user:UserAuth): Promise<boolean> => {
   try {
-    const response = await ApiInstance.post('/connexion', user);
+    const response = await ApiInstance.post('/login', user);
     const token = response.data?.token;
     if (token !== '') {
       useStoreAuth().updateToken(token);
@@ -29,4 +29,5 @@ export const userConnect = async (user:UserAuth): Promise<boolean> => {
     return false;
   }
 };
+
 

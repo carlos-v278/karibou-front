@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import {onBeforeMount, reactive, ref} from 'vue'
+import { onMounted, reactive, ref} from 'vue'
 import ListItem from 'src/features/base-components/ListItem.vue';
 import ListItems from 'src/features/base-components/listItems.vue';
 import ToggleBtn from 'src/features/base-components/ToggleBtn.vue';
 import MyAvatar from 'src/features/base-components/MyAvatar.vue';
-import KaribouLoading from 'src/features/base-components/KaribouLoading.vue';
-import {ApiInstance} from 'src/utils/api';
+import {useStoreBaseFeatures} from 'stores/base-features';
+import {userService} from 'src/_services';
 import { Building, Apartment,} from 'src/utils/interfaces';
-import { useQuasar } from 'quasar'
 
-const $q = useQuasar()
+//import loading actions
+const baseFeatures = useStoreBaseFeatures();
 
 //lifes cycles hooks
-onBeforeMount( ():void => {
+onMounted( ():void => {
   getApartments();
 })
 
@@ -21,11 +21,11 @@ const slide = ref(1)
 
 //current choice for the toggle of building or apartments
 const currentChoice = ref('imeuble')
+
 //function get emits from switch components
 function getCurrentChoice(choice:string):void
 {
   currentChoice.value = choice
-
 }
 
 //building of the user
@@ -37,19 +37,19 @@ let userApartments = reactive<Apartment[]>([])
 //Get Appartments and building request from the APi
 function getApartments():void
 {
-  $q.loading.show()
-  ApiInstance.get('/api/apartments')
-    .then((response) => {
-      const result = response.data;
-      userApartments = result
-      result.forEach((apart:any )=>{
-        userBuildings.push(apart.building )
+  baseFeatures.enableLoading()
+
+  userService.getUserApartments()
+    .then(<Response>(response:Response) => {
+      userApartments = response.data;
+      userApartments.forEach((apart:Apartment )=>{
+        userBuildings.push(apart.building)
       })
-      $q.loading.hide()
+      baseFeatures.disableLoading()
     })
     .catch((error) => {
       console.log('error', error);
-      $q.loading.hide()
+      baseFeatures.disableLoading()
     })
 
 }
@@ -57,7 +57,6 @@ function getApartments():void
 </script>
 <template>
   <q-page class="page_container row  justify-center">
-    <KaribouLoading></KaribouLoading>
     <div class="left ">
       <div class="left_header">
         <MyAvatar class="avatar"></MyAvatar>

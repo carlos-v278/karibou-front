@@ -7,9 +7,14 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '',name:'dwelling', component: () => import('src/features/dwelling/pages/IndexPage.vue') }],
   },
   {
-    path: '/login',
+    path: '/connexion',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', name:'login',component: () => import('@/features/authentication/pages/AuthLogin.vue') }],
+  },
+  {
+    path: '/deconnexion',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', name:'logout',component: () => import('@/features/authentication/pages/AuthLogout.vue') }],
   },
   {
     path: '/test',

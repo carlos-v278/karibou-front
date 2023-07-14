@@ -1,36 +1,49 @@
 <script setup lang="ts">
-import {ref} from 'vue'
+import {onBeforeMount, reactive} from 'vue'
 import { UserAuth } from 'src/utils/interfaces'
 import { useRouter } from 'vue-router'
-import {userConnect} from 'src/features/authentication/utils/connect';
 import {notify} from 'src/utils/utils';
-import { useQuasar } from 'quasar'
+import {accountService} from 'src/_services';
 
-const $q = useQuasar()
+//vue router actions
 const router = useRouter();
 
 
+onBeforeMount(()=>{
+  if(accountService.isLogged())
+  {
+    notify('Vous êtes déjà connecté.','warning')
+    router.push({name: 'dwelling'})
+  }
+})
+
 // login form data
-const user = ref<UserAuth>({
-  email:'felix@gmail.com',
-  password:'3debd266',
+const user = reactive<UserAuth>({
+  email:'carlosvieir333@gmail.com',
+  password:'carlos17',
 })
 
 //submit the login form
 async function onSubmit():Promise<void>
 {
-  $q.loading.show()
-  const isUserConnect = await userConnect(user.value);
-  $q.loading.hide()
-  if(isUserConnect){
+  login();
+}
 
-    router.push({
-      name: 'dwelling',
-    })
-    notify(`Bienvenue ${user.value.email}`,'positive')
-  } else{
-    notify('Email ou Mot de passe incorrect','negative')
-  }
+
+function login ():void {
+
+    accountService.login(user)
+      .then(res =>{
+        accountService.saveToken(res.data?.token)
+        notify(`Bienvenue ${user.email}.`,'positive')
+        router.push({name: 'dwelling'})
+      })
+      .catch(err => {
+        console.log(err)
+        notify('Email ou Mot de passe incorrect.','negative')
+      })
+
+
 }
 
 

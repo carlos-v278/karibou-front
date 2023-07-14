@@ -6,6 +6,24 @@ import { useRouter, useRoute } from 'vue-router'
 import {getLocalToken} from 'src/features/authentication/utils/connect';
 import {NavLinks} from 'src/utils/interfaces'
 import { RouteRecordName } from 'vue-router';
+import KaribouLoading from 'src/features/base-components/KaribouLoading.vue';
+import { useStoreBaseFeatures } from 'src/stores/base-features';
+import {storeToRefs} from 'pinia';
+import {accountService} from 'src/_services';
+import {notify} from 'src/utils/utils';
+
+//stores actions from base-features
+const baseFeatures = useStoreBaseFeatures();
+
+const {getLoadingStatus} = storeToRefs(baseFeatures)
+const showLoading = ref(false)
+
+//watch if the laoding status change
+watch(getLoadingStatus, ():void => {
+  showLoading.value = getLoadingStatus.value
+  console.log(getLoadingStatus.value)
+})
+
 
 const router = useRouter();
 const route = useRoute()
@@ -57,12 +75,10 @@ watch(route, ():void => {
 
 //check if the token exist in local storage and redirect
 function checkConnected():void{
-  const isConnected:boolean = getLocalToken();
-  console.log(isConnected , 'ici')
-  if(!isConnected){
-    router.push({
-      name: 'login',
-    })
+  if(!accountService.isLogged())
+  {
+
+    router.push({name: 'login'})
   }
 }
 
@@ -72,16 +88,19 @@ const hideHeader = ref(false)
 function checkPathHeader():void{
   //path to display none the header
   const pathsHideHeader:string[]=[
-    'login'
+    'login',
+    'logout'
   ];
   currentPathName.value = route.name
   hideHeader.value = pathsHideHeader.includes(currentPathName.value as string);
 }
 
+//loading animation
 
 </script>
 <template>
   <q-layout view="lHh Lpr lFf">
+    <KaribouLoading v-if="showLoading"></KaribouLoading>
     <q-page-container class="q‑px‑md">
       <header class="header" v-if="!hideHeader">
         <div class="logo">

@@ -13,6 +13,7 @@
     "build": "quasar build"
   },
   "dependencies": {
+    "@lottiefiles/vue-lottie-player": "^1.1.0",
     "@quasar/extras": "^1.0.0",
     "axios": "^1.2.1",
     "esbuild-plugin-alias-path": "^2.0.2",
