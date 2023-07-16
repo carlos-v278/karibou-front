@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref} from 'vue'
-import ListItem from 'src/features/base-components/ListItem.vue';
-import ListItems from 'src/features/base-components/listItems.vue';
-import ToggleBtn from 'src/features/base-components/ToggleBtn.vue';
-import MyAvatar from 'src/features/base-components/MyAvatar.vue';
+import ListItem from 'src/features/_base-components/ListItem.vue';
+import ListItems from 'src/features/_base-components/listItems.vue';
+import ToggleBtn from 'src/features/_base-components/ToggleBtn.vue';
+import MyAvatar from 'src/features/_base-components/MyAvatar.vue';
 import {useStoreBaseFeatures} from 'stores/base-features';
 import {userService} from 'src/_services';
 import { Building, Apartment,} from 'src/utils/interfaces';
@@ -54,14 +54,29 @@ function getApartments():void
 
 }
 
+
+//get the emits of the form to display from the Avatar component
+function getCurrFormToDisplay(choice:{type:string}):void{
+console.log(choice)
+}
+
 </script>
 <template>
   <q-page class="page_container row  justify-center">
     <div class="left ">
       <div class="left_header">
-        <MyAvatar class="avatar"></MyAvatar>
+        <MyAvatar
+          class="avatar"
+          @display-form ="getCurrFormToDisplay"
+        >
+
+        </MyAvatar>
       </div>
-      <ToggleBtn one-txt="imeuble" two-txt="appartement" @current-choice="getCurrentChoice">
+      <ToggleBtn
+        one-txt="imeuble"
+        two-txt="appartement"
+        @current-choice="getCurrentChoice"
+      >
 
       </ToggleBtn>
       <div class="list-items">

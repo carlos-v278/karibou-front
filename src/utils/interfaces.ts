@@ -29,14 +29,14 @@ export interface Building {
 
 }
 
-export interface User {
+export interface UserProfile {
   id:number;
   email:string;
-  firstname:string;
-  lastname:number;
+  firstName:string;
+  lastName:string;
   username:string;
-  zipcode:number;
-
+  picture: string;
+  roles: string[];
 }
 
-export type ExtUser<T> = T & User;
+

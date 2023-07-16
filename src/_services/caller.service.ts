@@ -7,7 +7,7 @@ const Axios = axios.create({
   paramsSerializer: params => qs.stringify(params)
 })
 
-Axios.interceptors.request.use(request =>{
+Axios.interceptors.request.use((request) =>{
   const token:string = accountService.getToken()
   if( token != ''){
       request.headers.Authorization= 'Bearer ' + token;
@@ -16,5 +16,18 @@ Axios.interceptors.request.use(request =>{
   request.headers['Content-Type'] ='application/json'
   return request;
 })
+Axios.interceptors.response.use(response => {
+
+  return response;
+}, async error => {
+  if (error.response.status === 401) {
+    console.log('inside  error')
+    await accountService.logout()
+    window.location.reload()
+
+  }
+  return error;
+});
+
 
 export default  Axios;
