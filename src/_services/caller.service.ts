@@ -14,6 +14,10 @@ Axios.interceptors.request.use((request) =>{
   }
   request.headers.Accept ='application/json'
   request.headers['Content-Type'] ='application/json'
+  if(request.method ==='patch'){
+    request.headers['Content-Type'] ='application/merge-patch+json'
+    request.headers.Accept ='*/*'
+  }
   return request;
 })
 Axios.interceptors.response.use(response => {

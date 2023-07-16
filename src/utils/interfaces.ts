@@ -39,4 +39,12 @@ export interface UserProfile {
   roles: string[];
 }
 
+export interface UserProfileEdit {
+  email:string;
+  firstName:string;
+  lastName:string;
+  username:string;
+  picture: string;
+}
+
 

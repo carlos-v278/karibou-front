@@ -62,7 +62,6 @@ function login ():void {
         v-model="user.email"
         label="Email"
         lazy-rules
-        :rules="[ val => val && val.length > 0 || 'Please type something']"
       />
 
       <q-input

@@ -105,7 +105,15 @@ function checkPathHeader():void{
         </div>
         <ul class="nav-links">
           <li v-for="(link,index) in navLinks" :key="index">
-            <q-btn  :size="link.size"  :to="link.to" color="white" text-color="primary" class="nav-link" round  :icon="link.icon" />
+            <q-btn
+              :size="link.size"
+              :to="link.to"
+              color="white"
+              text-color="primary"
+              class="nav-link"
+              round
+              :icon="link.icon"
+            />
           </li>
         </ul>
       </header>
