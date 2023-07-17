@@ -1,5 +1,6 @@
-# Projet Karibou
 ![alt text](https://github.com/carlos-v278/karibou-front/blob/main/public/images/logo.svg?raw=true)
+# Projet Karibou
+
 Ce dépôt contient les fichiers sources du projet Karibou, sur lequel je suis en cours de développement. Dans le cadre d'une période de recrutement, j'ai décidé de rendre ce projet public afin de partager mes compétences et mon savoir-faire avec d'éventuels recruteurs.
 
 # Aperçu du projet
