@@ -19,7 +19,7 @@ onBeforeMount(()=>{
 
 // login form data
 const user = reactive<UserAuth>({
-  email:'carlosvieir333@gmail.com',
+  email:'dorian.montalbetti@gmail.com',
   password:'carlos17',
 })
 
@@ -71,7 +71,12 @@ function login ():void {
         v-model="user.password"
         label="Password"
       />
-      <q-btn  class="row-input btn-cta" label="connexion" type="submit" color="primary"/>
+      <q-btn
+        class="row-input btn-cta"
+        label="connexion"
+        type="submit"
+        color="primary"
+      />
     </q-form>
   </div>
 </template>
