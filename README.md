@@ -1,22 +1,25 @@
 ![alt text](https://github.com/carlos-v278/karibou-front/blob/main/public/images/karibou-logo.png?raw=true)
-# Projet Karibou
+# Karibou Project
 
-Ce dépôt contient les fichiers sources du projet Karibou, sur lequel je suis en cours de développement. Dans le cadre d'une période de recrutement, j'ai décidé de rendre ce projet public afin de partager mes compétences et mon savoir-faire avec d'éventuels recruteurs.
+This repository contains the source files of the Karibou project, on which I am currently working on. As part of a recruitment period, I have decided to make this project public in order to share my skills and expertise with potential recruiters.
 
-# Aperçu du projet
+# Project Overview
 
-Karibou est une application qui vise à ...
+Karibou is an application that aims to ...
 
 # Symfony API Platform
 
-Dans le cadre de ce projet, j'ai développé une API basée sur Symfony API Platform. Cependant, pour des raisons personnelles et afin de protéger les données sensibles, cette API est actuellement en visibilité privée et n'est pas accessible publiquement.
+As part of this project, I have developed an API based on Symfony API Platform. However, for personal reasons and to protect sensitive data, this API is currently privately visible and not publicly accessible.
 
-Si vous êtes un recruteur intéressé par mes compétences en développement Quasar.js, Vue.js et Symfony, je serais ravi de partager avec vous des informations supplémentaires sur l'API, son fonctionnement et les fonctionnalités qu'elle offre. N'hésitez pas à me contacter pour en discuter davantage.
+If you are a recruiter interested in my skills in Quasar.js, Vue.js, and Symfony development, I would be delighted to share additional information with you about the API based on Symfony API Platform and the features it offers. Please feel free to contact me to discuss further.
 
 # Contact
 
-Si vous avez des questions, des commentaires ou des suggestions concernant ce projet ou si vous êtes intéressé par mes compétences en tant que développeur Symfony et Quasar.js, n'hésitez pas à me contacter. Vous pouvez m'envoyer un message via mon profil GitHub ou utiliser les coordonnées suivantes :
+If you have any questions, comments, or suggestions regarding this project, or if you are interested in my skills as a Symfony and Quasar.js developer, please do not hesitate to get in touch. You can reach me by sending a message through my GitHub profile or using the following contact information:
 
-Nom : Carlos Vieira Nkulu
-Adresse e-mail : carlosvieira278@gmail.com
-Téléphone : +33768827275
+Name: Carlos Vieira Nkulu
+
+Email: carlosvieira278@gmail.com
+
+Phone: +33768827275
+
