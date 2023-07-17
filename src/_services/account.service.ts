@@ -1,7 +1,6 @@
 import Axios from './caller.service';
 import {UserAuth} from 'src/utils/interfaces';
 
-
 //login to the api wich return a token
 const login = <T>(credentials:UserAuth):Promise<T> =>{
   return Axios.post('/login', credentials)

@@ -16,6 +16,7 @@ function logoutUser():void
 {
    accountService.logout()
      .then(res =>{
+       console.log(res)
        router.push({name: 'login'})
        notify('Déconnexion réussie','positive')
      })

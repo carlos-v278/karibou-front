@@ -3,14 +3,12 @@
 <script setup lang="ts">
 import {onMounted, reactive, watch,ref} from 'vue';
 import { useRouter, useRoute } from 'vue-router'
-import {getLocalToken} from 'src/features/authentication/utils/connect';
 import {NavLinks} from 'src/utils/interfaces'
 import { RouteRecordName } from 'vue-router';
-import KaribouLoading from 'src/features/base-components/KaribouLoading.vue';
+import KaribouLoading from 'src/features/_base-components/KaribouLoading.vue';
 import { useStoreBaseFeatures } from 'src/stores/base-features';
 import {storeToRefs} from 'pinia';
 import {accountService} from 'src/_services';
-import {notify} from 'src/utils/utils';
 
 //stores actions from base-features
 const baseFeatures = useStoreBaseFeatures();
@@ -21,7 +19,6 @@ const showLoading = ref(false)
 //watch if the laoding status change
 watch(getLoadingStatus, ():void => {
   showLoading.value = getLoadingStatus.value
-  console.log(getLoadingStatus.value)
 })
 
 
@@ -108,7 +105,15 @@ function checkPathHeader():void{
         </div>
         <ul class="nav-links">
           <li v-for="(link,index) in navLinks" :key="index">
-            <q-btn  :size="link.size"  :to="link.to" color="white" text-color="primary" class="nav-link" round  :icon="link.icon" />
+            <q-btn
+              :size="link.size"
+              :to="link.to"
+              color="white"
+              text-color="primary"
+              class="nav-link"
+              round
+              :icon="link.icon"
+            />
           </li>
         </ul>
       </header>
