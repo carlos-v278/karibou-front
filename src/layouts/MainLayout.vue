@@ -8,10 +8,13 @@ import { RouteRecordName } from 'vue-router';
 import KaribouLoading from 'src/features/_base-components/KaribouLoading.vue';
 import { useStoreBaseFeatures } from 'src/stores/base-features';
 import {storeToRefs} from 'pinia';
-import {accountService} from 'src/_services';
+import {accountService, userService} from 'src/_services';
+import {useUserStore} from 'src/features/_utils/user.store';
 
-//stores actions from base-features
+//pinia store
 const baseFeatures = useStoreBaseFeatures();
+
+const userInfosStore = useUserStore();
 
 const {getLoadingStatus} = storeToRefs(baseFeatures)
 const showLoading = ref(false)
@@ -61,7 +64,8 @@ const navLinks = reactive<NavLinks[]>([
 // check if connected when layout is mounted
 onMounted(() => {
   checkConnected();
-  checkPathHeader()
+  checkPathHeader();
+  checkProfileExist();
 });
 
 //check if connected when path change
@@ -74,8 +78,13 @@ watch(route, ():void => {
 function checkConnected():void{
   if(!accountService.isLogged())
   {
-
     router.push({name: 'login'})
+  }
+}
+function checkProfileExist():void{
+  const userProfile = userService.getLocalUserProfile()
+  if(userProfile){
+    userInfosStore.updateUserProfile(userProfile)
   }
 }
 

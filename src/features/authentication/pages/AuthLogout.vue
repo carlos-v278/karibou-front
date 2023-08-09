@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {onBeforeMount} from 'vue';
-import {accountService} from 'src/_services';
+import {accountService, userService} from 'src/_services';
 import {useRouter} from 'vue-router';
 import {notify} from 'src/utils/utils';
 
@@ -14,6 +14,7 @@ const router = useRouter();
 //function logout the user from the Api and remove Token
 function logoutUser():void
 {
+  userService.removeProfile();
    accountService.logout()
      .then(res =>{
        console.log(res)

@@ -30,12 +30,12 @@ export interface Building {
 }
 
 export interface UserProfile {
-  id:number;
-  email:string;
-  firstName:string;
-  lastName:string;
-  username:string;
-  picture: string;
+  id?:number;
+  email?:string;
+  firstname?:string;
+  lastname?:string;
+  username?:string;
+  picture?: string;
   roles: string[];
 }
 
@@ -45,6 +45,10 @@ export interface UserProfileEdit {
   lastName:string;
   username:string;
   picture: string;
+}
+export interface  filesRequest {
+  content? : Blob | MediaSource ;
+  requestUrl :string;
 }
 
 

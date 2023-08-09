@@ -1,28 +1,29 @@
 import { defineStore } from 'pinia';
 import {UserProfile} from 'src/utils/interfaces';
 interface UserInfos {
- userRole?:string;
- userProfile: UserProfile | null
+ userProfile: UserProfile | null,
+  allRoles: string[]
 }
 
 export const useUserStore = defineStore('user-infos', {
   state: (): UserInfos => ({
-    userRole:'',
-    userProfile: null
+    userProfile: null,
+    allRoles:[
+      'syndicate',
+      'owner',
+      'tenant'
+    ]
   }),
   getters: {
-    getUserRole: (state: UserInfos): string | undefined => {
-      return state.userRole;
-    },
     getUserProfile: (state: UserInfos): null | UserProfile => {
       return state.userProfile;
+    },
+    getAllRoles: (state: UserInfos): string[] | UserProfile => {
+      return state.allRoles;
     },
 
   },
   actions: {
-    updateUserRole(role:string): void {
-      this.userRole = role;
-    },
     updateUserProfile(profile: UserProfile): void {
       this.userProfile = profile;
     },

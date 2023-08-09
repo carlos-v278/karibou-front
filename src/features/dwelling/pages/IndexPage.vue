@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref} from 'vue'
+import {onMounted, reactive, ref, watch} from 'vue'
 import ListItem from 'src/features/_base-components/ListItem.vue';
 import ListItems from 'src/features/_base-components/listItems.vue';
 import ToggleBtn from 'src/features/_base-components/ToggleBtn.vue';
 import MyAvatar from 'src/features/_base-components/MyAvatar.vue';
 import {useStoreBaseFeatures} from 'stores/base-features';
 import {useUserStore} from 'src/features/_utils/user.store'
-import {userService} from 'src/_services';
-import { Building, Apartment,} from 'src/utils/interfaces';
+import {accountService, userService} from 'src/_services';
+import {Building, Apartment, filesRequest,} from 'src/utils/interfaces';
 import EditProfileInfos from 'src/features/dwelling/components/EditProfileInfos.vue';
 import {storeToRefs} from 'pinia';
+import Axios from 'src/_services/caller.service';
 
 
 //import stores
@@ -81,11 +82,38 @@ let profileInfosEdit = reactive({
   password:undefined
 })
 
+//array of files to uplaods in case multiples files with the good url request
+let formImages = reactive<filesRequest[]>([
+  {
+    content: undefined,
+    requestUrl:'/api/users/11/picture'
+  }
+])
+let profileImageEdit = ref('')
 
+//watch the upload file to display the current chosen picture
+watch(formImages,  () => {
+  profileImageEdit.value = URL.createObjectURL(formImages[0].content)
 
-function updateModelValue():void {
-  console.log(profileInfosEdit)
-}
+})
+
+function uploadFile(file):void {
+  let formData = new FormData();
+  let myHeaders = new Headers();
+  formData.append('file', file[0]);
+  myHeaders.append("Authorization", "Bearer kcp_f964ea23f867c5990a15bfecfc147dd2103a5bda433344f030e118dd71af1504");
+
+  fetch(`http://localhost:8080/api/users/${getUserProfile.value?.id}/picture`, {
+    method: "POST",
+    headers: myHeaders,
+    body:formData,
+  }).then((res)=> {
+     console.log(res)
+    })
+    .catch(function (error) {
+      console.log(error);
+    })}
+
 </script>
 <template>
   <q-page class="page_container row  justify-center">
@@ -231,13 +259,14 @@ function updateModelValue():void {
       @go-back="componentToDisplay = 'none'"
       :request="{method:'patch',url:`api/users/${getUserProfile?.id}` }"
       :form-data="profileInfosEdit"
+      :form-images="formImages"
     >
       <template #header>
         <div
           class="row avatar-edit no-wrap items-center"
         >
           <q-avatar >
-            <img src="https://cdn.quasar.dev/img/avatar.png">
+                <img  class="profile_image" :src="profileImageEdit" alt="user-profile-picture">
           </q-avatar>
           <q-file
             color="lime-11"
@@ -246,11 +275,21 @@ function updateModelValue():void {
             label="Photo de profil"
             class="q-ml-md"
             style="width: 100%"
+            v-model="formImages[0].content"
           >
             <template v-slot:prepend>
               <q-icon name="attachment" />
             </template>
           </q-file>
+          <q-uploader
+            label="Uploader une photo"
+            multipl
+            max-files="1"
+            style="max-width: 300px"
+            :factory="uploadFile"
+
+          />
+          <input type="file" id="file" @change="uploadFile"/>
         </div>
       </template>
       <template #main>
@@ -260,9 +299,7 @@ function updateModelValue():void {
           type="text"
           v-model="profileInfosEdit.firstname"
           :model-value="profileInfosEdit.firstname ===''? profileInfosEdit.firstname = undefined : profileInfosEdit.firstname"
-          @update:modelValue="updateModelValue"
           label="Prenom"
-
 
         />
 
@@ -351,6 +388,11 @@ function updateModelValue():void {
 
   }
 
+}
+.profile_image{
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
 }
 .icon{
   background: white;

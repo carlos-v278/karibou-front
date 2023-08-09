@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import {onBeforeMount, reactive} from 'vue'
-import { UserAuth } from 'src/utils/interfaces'
+import {UserAuth, UserProfile} from 'src/utils/interfaces'
 import { useRouter } from 'vue-router'
 import {notify} from 'src/utils/utils';
-import {accountService} from 'src/_services';
+import {accountService, userService} from 'src/_services';
+import {useUserStore} from 'src/features/_utils/user.store';
 
 //vue router actions
 const router = useRouter();
 
+const userInfosStore = useUserStore();
 
 onBeforeMount(()=>{
   if(accountService.isLogged())
@@ -37,6 +39,7 @@ function login ():void {
         accountService.saveToken(res.data?.token)
         notify(`Bienvenue ${user.email}.`,'positive')
         router.push({name: 'dwelling'})
+        getProfileInfos()
       })
       .catch(err => {
         console.log(err)
@@ -46,6 +49,25 @@ function login ():void {
 
 }
 
+let userInfo = reactive<UserProfile>({
+  id: undefined,
+  email: undefined,
+  firstname: undefined,
+  lastname: undefined,
+  username:undefined,
+  picture:undefined,
+  roles: [],
+});
+
+//function to get currentUserInfos
+function getProfileInfos(){
+  userService.getUserProfile()
+    .then( (res: unknown) => {
+      userInfo = res.data;
+      userService.saveUserProfile(userInfo)
+      userInfosStore.updateUserProfile(userInfo)
+    })
+}
 
 </script>
 

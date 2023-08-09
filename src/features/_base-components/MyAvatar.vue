@@ -1,94 +1,73 @@
 <script setup lang="ts">
-import {onBeforeMount, ref,reactive} from 'vue'
-import {userService} from 'src/_services';
-import {UserProfile} from 'src/utils/interfaces';
+import { ref} from 'vue'
+import {useStoreBaseFeatures} from 'stores/base-features';
+import {storeToRefs} from 'pinia';
 import {useUserStore} from 'src/features/_utils/user.store';
-
-//pinia store userInfos
+//import stores
+const baseFeatures = useStoreBaseFeatures();
+const {getBaseUrl} = storeToRefs(baseFeatures)
 
 const userInfosStore = useUserStore();
+const {getUserProfile} = storeToRefs(userInfosStore)
 
 //boolean to activate the floating avatar options
 const  userOptions = ref(false)
 
-onBeforeMount(()=>{
-  getProfileInfos();
-})
-
 //emits
 const emits = defineEmits(['displayForm'])
 
-let userInfo = reactive<UserProfile>({
-  id: 0,
-  email: '',
-  firstName: '',
-  lastName: '',
-  username: '',
-  picture: '',
-  roles: [],
-});
-let roles= reactive([
-  'syndicate',
-  'owner',
-  'tenant'
-
-])
-
-//current user role
-let userRole= ref('')
-//function to get currentUserInfos
-function getProfileInfos():void{
-  userService.getUserProfile()
-    .then((res :unknown) =>{
-      userInfo = res.data;
-      userInfosStore.updateUserProfile(userInfo)
-      switch (true) {
-        case userInfo.roles.includes('ROLE_OWNER_CREATE'):
-          userRole.value = roles[0];
-          break;
-        case userInfo.roles.includes('ROLE_TENANT_CREATE'):
-          userRole.value = roles[1];
-          break;
-        default:
-          userRole.value = roles[2];
-      }
-      userInfosStore.updateUserRole(userRole.value)
-    })
+//function wich emits and disable the floating user options
+function emitsFormToDisplay(choice:string):void
+{
+  emits('displayForm', choice)
+  userOptions.value =false
 }
 
 </script>
 <template>
-<div class="my-avatar">
+<div class="my-avatar" >
   <div class="my-avatar-img">
-    <img src="https://cdn.quasar.dev/img/avatar.png" alt="personal-avatar-image">
+
+    <img
+      v-if="getUserProfile?.picture"
+      alt="personal-avatar-image"
+      :src="getBaseUrl+ ''+ getUserProfile.picture"
+    >
+    <img
+      v-else
+      alt="personal-avatar-image"
+      src="https://images.assetsdelivery.com/compings_v2/salamatik/salamatik1801/salamatik180100019.jpg"
+    >
+
+
   </div>
   <div class="floating-info">
     <q-icon @click="userOptions = !userOptions" :class="{arrow: userOptions}" name="fa-solid fa-angle-down"  round size="xs" color="primary"/>
     <div class="my-avatar-options" v-if="userOptions">
       <ul class="options">
         <li class="option user-name">
-          {{userInfo.firstName}} {{userInfo.lastName}}
+          {{getUserProfile?.firstname}} {{getUserProfile?.lastname}}
         </li>
         <li class="option" >
-          {{userInfo.email}}
+          {{getUserProfile?.email}}
         </li>
         <li
           class="option option-action"
-          @click=" emits('displayForm', 'informations')"
+          @click="emitsFormToDisplay('informations')"
         >
           Modifier mes informations
         </li>
         <li
-            v-if="userRole === roles[0]"
+            v-if="getUserProfile?.roles.includes('ROLE_OWNER_CREATE')"
             class="option option-action"
-            @click="emits('displayForm', 'invitation')"
+            @click="emitsFormToDisplay('owner-inv')"
         >
           Inviter un Propriètaire
         </li>
         <li
-          v-if="userRole === roles[1]"
+          v-if="getUserProfile?.roles.includes('ROLE_TENANT_CREATE')"
           class="option option-action"
-          @click="emits('displayForm', 'invitation')"
+          @click="emitsFormToDisplay('tenant-inv')"
         >
           Inviter un Locataire
         </li>
@@ -147,8 +126,8 @@ function getProfileInfos():void{
       display: none;
       top: 130%;
       z-index: 1;
-      right: 0%;
-      width: 220px;
+      right: 0;
+      max-width: 520px;
       border:1px solid $primary ;
       background: white;
       padding: 10px 10px;

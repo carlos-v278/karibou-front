@@ -5,6 +5,8 @@
 
 //emits
 import Axios from 'src/_services/caller.service';
+import {filesRequest} from 'src/utils/interfaces';
+import {PropType} from 'vue';
 
 const emits = defineEmits(['goBack'])
 //props
@@ -17,25 +19,58 @@ const props = defineProps({
 },
   request:{
     type:Object
+  },
+  formImages:{
+    type:Array as PropType<filesRequest[]>
   }
 })
 
+
 //submit form value
 function onSubmit():void{
-  const dataBody = props.formData
-  if(props.request && props.request.method === 'patch'){
 
-    Axios.patch(props.request.url ,dataBody)
-      .then(res =>{
-        console.log(res)
-      })
-      .catch(err =>{
-        console.log(err)
-      })
-  }
-
+  editMainInformations();
+  filesUploads();
 }
 
+//function wich path every primitive users informations
+function editMainInformations():void
+{
+  const dataBody = props.formData
+  if(props.request && props.request.method === 'patch' ){
+    if(dataBody?.firstname || dataBody?.lastname || dataBody?.password || dataBody?.username )
+      Axios.patch(props.request.url ,dataBody)
+        .then(res =>{
+          console.log(res)
+        })
+        .catch(err =>{
+          console.log(err)
+        })
+  }
+}
+
+//function wich uploads files ex: user profile picture
+function filesUploads():void
+{
+  props.formImages?.forEach((file : filesRequest ) :void=>{
+    const fileData = file.content;
+    if(file.content){
+      let formData = new FormData()
+      formData.append("file", URL.createObjectURL(fileData))
+      Axios.post(file.requestUrl ,formData ,{
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+        .then(res =>{
+          console.log(res)
+        })
+        .catch(err =>{
+          console.log(err)
+        })
+    }
+  })
+}
 
 </script>
 
