@@ -6,7 +6,13 @@ import {UserProfile} from 'src/utils/interfaces';
 }
 
 const saveUserProfile = (profile : UserProfile):void=>{
-  localStorage.setItem('userProfile', JSON.stringify(profile))
+  const localProfile: string | null  = localStorage.getItem('userProfile');
+  if(localProfile == null){
+    localStorage.removeItem('userProfile')
+    localStorage.setItem('userProfile', JSON.stringify(profile))
+  } else {
+    localStorage.setItem('userProfile', JSON.stringify(profile))
+  }
 }
 const removeProfile = ():void=>{
   localStorage.removeItem('userProfile')
@@ -21,16 +27,20 @@ const getLocalUserProfile = (): UserProfile | undefined =>{
 
 
 
+
 const getUserApartments =<T>():Promise<T> =>{
   return Axios.get('/api/apartments');
 }
-
+const getSyndicateBuildings =<T>():Promise<T> =>{
+  return Axios.get('/api/buildings');
+}
 
 export const userService: {
   saveUserProfile: (profile: UserProfile) => void;
   removeProfile: () => void;
   getUserProfile: <T>() => Promise<T>;
   getUserApartments: <T>() => Promise<T>;
+  getSyndicateBuildings: <T>() => Promise<T>;
   getLocalUserProfile : () => UserProfile | undefined
 
 } ={
@@ -38,5 +48,6 @@ export const userService: {
   removeProfile,
   saveUserProfile,
   getUserApartments,
+  getSyndicateBuildings,
   getLocalUserProfile,
 }

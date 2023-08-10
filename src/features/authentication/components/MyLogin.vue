@@ -49,23 +49,15 @@ function login ():void {
 
 }
 
-let userInfo = reactive<UserProfile>({
-  id: undefined,
-  email: undefined,
-  firstname: undefined,
-  lastname: undefined,
-  username:undefined,
-  picture:undefined,
-  roles: [],
-});
+
 
 //function to get currentUserInfos
 function getProfileInfos(){
   userService.getUserProfile()
     .then( (res: unknown) => {
-      userInfo = res.data;
-      userService.saveUserProfile(userInfo)
-      userInfosStore.updateUserProfile(userInfo)
+      console.log(res.data)
+      userService.saveUserProfile(res.data)
+      userInfosStore.updateUserProfile(res.data)
     })
 }
 

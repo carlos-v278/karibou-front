@@ -134,7 +134,7 @@ function checkPathHeader():void{
 <style lang="scss" scoped>
 .header{
   z-index: 1;
-  position: absolute;
+  position: fixed;
   left: 50%;
   transform: translateX(-50%);
   bottom: 30px;

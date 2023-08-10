@@ -26,6 +26,7 @@ export const useUserStore = defineStore('user-infos', {
   actions: {
     updateUserProfile(profile: UserProfile): void {
       this.userProfile = profile;
+      this.userProfile.picture = 'http://127.0.0.1:8080' + this.userProfile.picture
     },
 
   }

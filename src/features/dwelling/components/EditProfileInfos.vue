@@ -1,13 +1,15 @@
 <script lang="ts" setup>
-
-
-
-
-//emits
 import Axios from 'src/_services/caller.service';
-import {filesRequest} from 'src/utils/interfaces';
 import {PropType} from 'vue';
+import {accountService, userService} from 'src/_services';
+import {useUserStore} from 'src/features/_utils/user.store';
+import {storeToRefs} from 'pinia';
+const userInfosStore = useUserStore();
 
+const userData = useUserStore();
+//all user data ex: profile and current role
+const {getUserProfile} = storeToRefs(userData)
+//emits
 const emits = defineEmits(['goBack'])
 //props
 const props = defineProps({
@@ -20,8 +22,8 @@ const props = defineProps({
   request:{
     type:Object
   },
-  formImages:{
-    type:Array as PropType<filesRequest[]>
+  formImage:{
+    type:Object as PropType<Blob | MediaSource >
   }
 })
 
@@ -41,7 +43,8 @@ function editMainInformations():void
     if(dataBody?.firstname || dataBody?.lastname || dataBody?.password || dataBody?.username )
       Axios.patch(props.request.url ,dataBody)
         .then(res =>{
-          console.log(res)
+          console.log(res.status)
+
         })
         .catch(err =>{
           console.log(err)
@@ -49,29 +52,43 @@ function editMainInformations():void
   }
 }
 
+
 //function wich uploads files ex: user profile picture
 function filesUploads():void
 {
-  props.formImages?.forEach((file : filesRequest ) :void=>{
-    const fileData = file.content;
-    if(file.content){
-      let formData = new FormData()
-      formData.append("file", URL.createObjectURL(fileData))
-      Axios.post(file.requestUrl ,formData ,{
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+
+    if(props.formImage && Object.keys(props.formImage).length > 0){
+      console.log(props.formImage,'fff')
+      console.log(props.formImage,'inside of the component')
+      let formData = new FormData();
+      let myHeaders = new Headers();
+      let token = accountService.getToken()
+      myHeaders.append('Authorization', `Bearer ${token}`);
+      formData.append('file', props.formImage)
+      fetch(`http://localhost:8080/api/users/${getUserProfile.value?.id}/picture`, {
+        method: 'POST',
+        headers: myHeaders,
+        body:formData,
+      }).then((res)=> {
+        console.log(res)
+        updateProfileInfos()
       })
-        .then(res =>{
-          console.log(res)
-        })
-        .catch(err =>{
-          console.log(err)
-        })
-    }
-  })
+        .catch(function (error) {
+          console.log(error);
+        })}
+
+
 }
 
+//update personal profile informations after edit
+function updateProfileInfos(){
+  userService.getUserProfile()
+    .then( (res: unknown) => {
+      userService.saveUserProfile(res.data)
+      userInfosStore.updateUserProfile(res.data)
+    })
+
+}
 </script>
 
 <template>
@@ -117,7 +134,7 @@ function filesUploads():void
 .perso-infos-form{
   position: relative;
   border: 2px solid #F3F3F3;
-  width: 50%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -136,7 +153,7 @@ function filesUploads():void
     color: $primary;
   }
   .form{
-    padding: 15px 15px;
+    padding: 15px 15px 100px;
     margin-top:10px;
     display: flex;
     flex-direction: column;
@@ -153,4 +170,5 @@ function filesUploads():void
 
   }
 }
+
 </style>

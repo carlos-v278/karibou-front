@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref} from 'vue'
-import {useStoreBaseFeatures} from 'stores/base-features';
+
 import {storeToRefs} from 'pinia';
 import {useUserStore} from 'src/features/_utils/user.store';
 //import stores
-const baseFeatures = useStoreBaseFeatures();
-const {getBaseUrl} = storeToRefs(baseFeatures)
+
 
 const userInfosStore = useUserStore();
 const {getUserProfile} = storeToRefs(userInfosStore)
+
 
 //boolean to activate the floating avatar options
 const  userOptions = ref(false)
@@ -23,6 +23,7 @@ function emitsFormToDisplay(choice:string):void
   userOptions.value =false
 }
 
+console.log(getUserProfile.value?.picture, 'picture')
 </script>
 <template>
 <div class="my-avatar" >
@@ -31,7 +32,7 @@ function emitsFormToDisplay(choice:string):void
     <img
       v-if="getUserProfile?.picture"
       alt="personal-avatar-image"
-      :src="getBaseUrl+ ''+ getUserProfile.picture"
+      :src="getUserProfile.picture"
     >
     <img
       v-else

@@ -40,12 +40,27 @@ export interface UserProfile {
 }
 
 export interface UserProfileEdit {
-  email:string;
-  firstName:string;
-  lastName:string;
-  username:string;
-  picture: string;
+  firstname?:string;
+  lastname?:string;
+  username?:string;
+  password?:string
 }
+
+export interface OwnerInfosInvit {
+  firstname?:string;
+  email?:string;
+  lastname?:string;
+  username?:string;
+  password?:string
+  properties : OwnerInfosProperty[]
+}
+export interface OwnerInfosProperty{
+  number?: undefined;
+  floor?: undefined;
+  rent?: undefined;
+  building?: undefined;
+}
+
 export interface  filesRequest {
   content? : Blob | MediaSource ;
   requestUrl :string;
