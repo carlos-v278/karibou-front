@@ -25,7 +25,7 @@ Axios.interceptors.response.use(response => {
   return response;
 }, async error => {
   if (error.response.status === 401) {
-    console.log('inside  error')
+    console.log('inside  error la la', error.request)
     await accountService.logout()
     window.location.reload()
 

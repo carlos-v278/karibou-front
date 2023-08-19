@@ -1,7 +1,7 @@
 
 
 <script setup lang="ts">
-import {onMounted, reactive, watch,ref} from 'vue';
+import {onMounted, reactive, watch, ref, onBeforeMount} from 'vue';
 import { useRouter, useRoute } from 'vue-router'
 import {NavLinks} from 'src/utils/interfaces'
 import { RouteRecordName } from 'vue-router';
@@ -48,10 +48,10 @@ const navLinks = reactive<NavLinks[]>([
     icon:'fa-solid fa-plus'
   },
   {
-    to:'',
-    name:'apartment',
+    to:'/buildings',
+    name:'buildings',
     size:'sm',
-    icon:'fa-solid fa-building-user'
+    icon:'fa-solid fa-bullhorn'
   },
   {
     to:'/login',
@@ -60,12 +60,15 @@ const navLinks = reactive<NavLinks[]>([
     icon:'widgets'
   },
 ])
-
+onBeforeMount(async ()=>{
+  checkProfileExist();
+  checkApartmentsAndBuildings();
+})
 // check if connected when layout is mounted
 onMounted(() => {
   checkConnected();
   checkPathHeader();
-  checkProfileExist();
+
 });
 
 //check if connected when path change
@@ -101,8 +104,20 @@ function checkPathHeader():void{
   hideHeader.value = pathsHideHeader.includes(currentPathName.value as string);
 }
 
-//loading animation
+//check if apartments and buildings exist in local storage
+function checkApartmentsAndBuildings():void{
+  const userApartments = userService.getLocalUserApartments()
+  const userBuildings = userService.getLocalUserBuildings()
+  console.log(userBuildings, 'lal la')
+  if(userApartments !=undefined){
+    userInfosStore.updateUserApartments(userApartments)
+    userInfosStore.updateUserBuildings(userBuildings)
 
+  }
+  if(userBuildings != undefined){
+
+  }
+}
 </script>
 <template>
   <q-layout view="lHh Lpr lFf">
@@ -133,7 +148,7 @@ function checkPathHeader():void{
 
 <style lang="scss" scoped>
 .header{
-  z-index: 1;
+  z-index: 3;
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
@@ -163,7 +178,7 @@ function checkPathHeader():void{
     }
   }
 }
-@media screen and (min-width: 881px) {
+@media screen and (min-width: 977px) {
   .header{
     width: 81px;
     height: 94vh;

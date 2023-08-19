@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {onBeforeMount, reactive} from 'vue'
-import {UserAuth, UserProfile} from 'src/utils/interfaces'
+import {UserAuth} from 'src/utils/interfaces'
 import { useRouter } from 'vue-router'
 import {notify} from 'src/utils/utils';
 import {accountService, userService} from 'src/_services';
@@ -21,7 +21,7 @@ onBeforeMount(()=>{
 
 // login form data
 const user = reactive<UserAuth>({
-  email:'dorian.montalbetti@gmail.com',
+  email:'carlosvieira278@gmail.com',
   password:'carlos17',
 })
 
@@ -32,17 +32,19 @@ async function onSubmit():Promise<void>
 }
 
 
-function login ():void {
+async function login () {
 
-    accountService.login(user)
+   await accountService.login(user)
       .then(res =>{
-        accountService.saveToken(res.data?.token)
-        notify(`Bienvenue ${user.email}.`,'positive')
-        router.push({name: 'dwelling'})
-        getProfileInfos()
+        if(res.status == 200){
+          getProfileInfos()
+          accountService.saveToken(res.data?.token)
+        } else {
+          notify('Email ou Mot de passe incorrect.','negative')
+        }
       })
       .catch(err => {
-        console.log(err)
+        console.log(err,'ici')
         notify('Email ou Mot de passe incorrect.','negative')
       })
 
@@ -52,12 +54,14 @@ function login ():void {
 
 
 //function to get currentUserInfos
-function getProfileInfos(){
-  userService.getUserProfile()
+async function getProfileInfos(){
+  await userService.getUserProfile()
     .then( (res: unknown) => {
       console.log(res.data)
       userService.saveUserProfile(res.data)
       userInfosStore.updateUserProfile(res.data)
+      notify(`Bienvenue ${user.email}.`,'positive')
+      router.push({name: 'dwelling'})
     })
 }
 

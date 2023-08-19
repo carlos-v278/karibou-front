@@ -4,6 +4,8 @@ import {PropType} from 'vue';
 import {accountService, userService} from 'src/_services';
 import {useUserStore} from 'src/features/_utils/user.store';
 import {storeToRefs} from 'pinia';
+import {notify} from 'src/utils/utils';
+import {useStoreBaseFeatures} from 'stores/base-features';
 const userInfosStore = useUserStore();
 
 const userData = useUserStore();
@@ -41,14 +43,32 @@ function editMainInformations():void
   const dataBody = props.formData
   if(props.request && props.request.method === 'patch' ){
     if(dataBody?.firstname || dataBody?.lastname || dataBody?.password || dataBody?.username )
+      useStoreBaseFeatures().enableLoading()
       Axios.patch(props.request.url ,dataBody)
         .then(res =>{
           console.log(res.status)
-
+          notify('le formulaire a été envoyé avec succès.','positive')
+          useStoreBaseFeatures().disableLoading()
         })
         .catch(err =>{
           console.log(err)
+          useStoreBaseFeatures().disableLoading()
         })
+  }
+  if(props.request && props.request.method === 'post' && dataBody){
+    useStoreBaseFeatures().enableLoading()
+    Axios.post(props.request.url ,dataBody)
+      .then(res =>{
+        console.log(res.status)
+        useStoreBaseFeatures().disableLoading()
+        notify('le formulaire a été envoyé avec succès.','positive')
+
+      })
+      .catch(err =>{
+        useStoreBaseFeatures().disableLoading()
+        console.log(err)
+      })
+
   }
 }
 
@@ -58,8 +78,6 @@ function filesUploads():void
 {
 
     if(props.formImage && Object.keys(props.formImage).length > 0){
-      console.log(props.formImage,'fff')
-      console.log(props.formImage,'inside of the component')
       let formData = new FormData();
       let myHeaders = new Headers();
       let token = accountService.getToken()
@@ -69,8 +87,8 @@ function filesUploads():void
         method: 'POST',
         headers: myHeaders,
         body:formData,
-      }).then((res)=> {
-        console.log(res)
+      }).then(()=> {
+        notify('La photo a été uploadé avec succès.','positive')
         updateProfileInfos()
       })
         .catch(function (error) {

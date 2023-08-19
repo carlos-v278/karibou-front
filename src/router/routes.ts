@@ -7,6 +7,14 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '',name:'dwelling', component: () => import('src/features/dwelling/pages/IndexPage.vue') }],
   },
   {
+    path: '/buildings',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '',name:'all_advertisements', component: () => import('@/features/advertisements/pages/AdvertisementsIndex.vue') },
+      { path: ':id/annonces',name:'buidling_advertisements', component: () => import('@/features/advertisements/pages/BuildingAdvertisements.vue') }
+    ],
+  },
+  {
     path: '/connexion',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', name:'login',component: () => import('@/features/authentication/pages/AuthLogin.vue') }],

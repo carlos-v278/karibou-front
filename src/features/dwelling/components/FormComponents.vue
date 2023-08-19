@@ -1,8 +1,16 @@
 <script setup lang="ts">
 
 import EditProfileInfos from 'src/features/dwelling/components/EditProfileInfos.vue';
-import { reactive} from 'vue';
-import {OwnerInfosInvit, OwnerInfosProperty, UserProfileEdit} from 'src/utils/interfaces';
+import {onBeforeMount, reactive, ref} from 'vue';
+import {
+  Apartment,
+  Building,
+  BuildingsOptions,
+  OwnerInfosInvit,
+  OwnerInfosProperty,
+  TenantInfosInvit,
+  UserProfileEdit
+} from 'src/utils/interfaces';
 import {storeToRefs} from 'pinia';
 import {useUserStore} from 'src/features/_utils/user.store';
 
@@ -10,7 +18,7 @@ import {useUserStore} from 'src/features/_utils/user.store';
 const userData = useUserStore();
 
 //all user data ex: profile and current role
-const {getUserProfile} = storeToRefs(userData)
+const {getUserProfile, getBuildings,getApartments} = storeToRefs(userData)
 
 let props = defineProps({
   component:{
@@ -31,7 +39,7 @@ let profileInfosEdit = reactive<UserProfileEdit>({
 })
 
 //update user profile picture
-let formPicture = reactive<Blob | MediaSource | object>({})
+let formPicture = ref<Blob | MediaSource | object>({})
 
 // owner informations to invite
 let ownerInfosInvit = reactive<OwnerInfosInvit>({
@@ -42,17 +50,64 @@ let ownerInfosInvit = reactive<OwnerInfosInvit>({
   properties : [],
 })
 
+//tenant informations to invite
+let tenantInfosInvit = reactive<TenantInfosInvit>({
+  email : undefined,
+  username :undefined,
+  firstname : undefined,
+  lastname : undefined,
+  location : undefined,
+})
+
 
 function addProperties():void{
   let property:OwnerInfosProperty =   {
-    number: undefined,
-    floor: undefined,
-    rent: undefined,
-    building: undefined
+    number: 0,
+    floor: 0,
+    rent: 0,
+    building: ''
   }
-  ownerInfosInvit.properties.push(
-    property
-  )
+  ownerInfosInvit.properties =[...ownerInfosInvit.properties, property]
+
+}
+
+let buildingOptions = reactive<BuildingsOptions[]>([
+])
+let apartmentsOptions = reactive<BuildingsOptions[]>([
+])
+let currBuildChoice = ref({
+  uriId:'',
+  label:''
+})
+
+let currApartChoice = ref({
+  uriId:'',
+  label:''
+})
+onBeforeMount(()=>{
+  let tempOptionBuil: BuildingsOptions = {
+  }
+  let tempOptionApart: BuildingsOptions = {
+  }
+  getBuildings.value?.forEach((building : Building)=>{
+    tempOptionBuil.uriId = '/api/buildings/' + building.id
+    tempOptionBuil.label = `${building.number} ${building.street}, ${building.city} ${building.zipcode}`
+    buildingOptions = [...buildingOptions, tempOptionBuil];
+  })
+
+  getApartments.value?.forEach((apartment : Apartment)=>{
+    tempOptionApart.uriId = '/api/apartments/' + apartment.id
+    tempOptionApart.label = `Appartement  N°${apartment.number}, étage N°${apartment.floor} `
+    apartmentsOptions = [...apartmentsOptions, tempOptionApart];
+  })
+})
+
+function upCurrBuilChoice(apartmentIndex :number):void{
+  ownerInfosInvit.properties[apartmentIndex].building = currBuildChoice.value.uriId
+
+}
+function upCurrApartChoice():void{
+  tenantInfosInvit.location = currApartChoice.value.uriId
 }
 </script>
 <template>
@@ -75,7 +130,7 @@ function addProperties():void{
             color="lime-11"
             bg-color="grey-light"
             filled
-            label="Photo de profil"
+            label="Photo de profile"
             style="width: 100%"
             v-model="formPicture"
           >
@@ -146,7 +201,6 @@ function addProperties():void{
           filled
           type="text"
           v-model="ownerInfosInvit.firstname"
-          :model-value="ownerInfosInvit.firstname ===''? ownerInfosInvit.firstname = undefined : ownerInfosInvit.firstname"
           label="Prenom"
 
         />
@@ -155,7 +209,6 @@ function addProperties():void{
           filled
           type="text"
           v-model="ownerInfosInvit.lastname"
-          :model-value="ownerInfosInvit.lastname ===''? ownerInfosInvit.lastname = undefined : ownerInfosInvit.lastname"
           label="Nom"
 
         />
@@ -164,7 +217,6 @@ function addProperties():void{
           filled
           type="email"
           v-model="ownerInfosInvit.email"
-          :model-value="ownerInfosInvit.email ===''? ownerInfosInvit.firstname = undefined : ownerInfosInvit.firstname"
           label="Email"
 
         />
@@ -173,8 +225,7 @@ function addProperties():void{
           filled
           type="text"
           v-model="ownerInfosInvit.username"
-          :model-value="ownerInfosInvit.username ===''? ownerInfosInvit.username = undefined : ownerInfosInvit.username"
-          label="Nom"
+          label="Username"
 
         />
         <div class="form-drop_down">
@@ -212,7 +263,8 @@ function addProperties():void{
                   filled
                   dense
                   type="number"
-                  v-model="propertie.number"
+                  :model-value="Number(propertie.number)"
+                  v-model.number="propertie.number"
                   label="N°"
 
                 />
@@ -221,7 +273,8 @@ function addProperties():void{
                   filled
                   dense
                   type="number"
-                  v-model="propertie.floor"
+                  :model-value="Number(propertie.floor)"
+                  v-model.number="propertie.floor"
                   label="Etage°"
 
                 />
@@ -229,17 +282,83 @@ function addProperties():void{
                   class="row-input q-mb-sm"
                   filled
                   dense
+                  :model-value="Number(propertie.rent)"
                   type="number"
-                  v-model="propertie.rent"
+                  v-model.number="propertie.rent"
                   label="Loyer°"
 
                 />
-                <q-select filled dense v-model="model" :options="options" label="Filled" />
+                <q-select
+                  filled
+                  dense
+                  v-model="currBuildChoice"
+                  :options="buildingOptions"
+                  @update:modelValue="upCurrBuilChoice(index)"
+                  label="Batiment" />
               </li>
             </ul>
           </div>
 
         </div>
+
+
+      </template>
+      <template #footer>
+        <q-btn
+          class="row-input btn-cta"
+          label="Modifier"
+          type="submit"
+          color="primary"/>
+      </template>
+    </EditProfileInfos>
+    <EditProfileInfos
+      v-if="props.component === 'tenant-inv'"
+      title="Inviter un locataire"
+      @go-back="emits('closeForm')"
+      :request="{method:'post',url:'api/users/tenant'}"
+      :form-data="tenantInfosInvit"
+    >
+
+      <template #main>
+        <q-input
+          class="row-input"
+          filled
+          type="text"
+          v-model="tenantInfosInvit.firstname"
+          label="Prenom"
+
+        />
+        <q-input
+          class="row-input"
+          filled
+          type="text"
+          v-model="tenantInfosInvit.lastname"
+          label="Nom"
+
+        />
+        <q-input
+          class="row-input"
+          filled
+          type="email"
+          v-model="tenantInfosInvit.email"
+          label="Email"
+
+        />
+        <q-input
+          class="row-input"
+          filled
+          type="text"
+          v-model="tenantInfosInvit.username"
+          label="Username"
+
+        />
+        <q-select
+          filled
+          dense
+          v-model="currApartChoice"
+          :options="apartmentsOptions"
+          @update:modelValue="upCurrApartChoice()"
+          label="Batiment" />
 
 
       </template>
@@ -276,7 +395,7 @@ function addProperties():void{
 
   }
 }
-@media screen and (min-width: 1081px) {
+@media screen and (min-width: 977px) {
   .components_container{
     width: 50%;
 

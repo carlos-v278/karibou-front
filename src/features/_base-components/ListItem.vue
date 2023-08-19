@@ -1,10 +1,17 @@
 <script lang="ts" setup>
-
+const props = defineProps({
+  border: {
+    type:Boolean,
+    default: true,
+  }
+})
 
 </script>
 
 <template>
-  <div class="list-item row items-center justify-between q-pa-lg" >
+  <div
+    :class="{border: props.border}"
+    class="list-item row items-center justify-between " >
     <div class="list-item-icons">
       <slot name="icons" >
 
@@ -25,7 +32,8 @@
 
 <style lang="scss" scoped>
 .list-item{
-  border: 1px solid #E8E8E8;
+  margin: 15px 0;
+  padding: 15px 20px;
   max-width: 578px;
   min-height: 68px;
   border-radius: 18px;
@@ -54,5 +62,8 @@
     width: 100%;
     max-width: 20%;
   }
+}
+.border{
+  border: 1px solid #E8E8E8;
 }
 </style>

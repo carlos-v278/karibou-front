@@ -1,8 +1,11 @@
 import { defineStore } from 'pinia';
-import {UserProfile} from 'src/utils/interfaces';
+import {Apartment, Building, UserProfile} from 'src/utils/interfaces';
 interface UserInfos {
- userProfile: UserProfile | null,
-  allRoles: string[]
+ userProfile: UserProfile | null;
+  allRoles: string[];
+  userApartments:  null | Apartment[];
+  userBuildings:  null | Building[];
+
 }
 
 export const useUserStore = defineStore('user-infos', {
@@ -12,7 +15,10 @@ export const useUserStore = defineStore('user-infos', {
       'syndicate',
       'owner',
       'tenant'
-    ]
+    ],
+    userApartments: null,
+    userBuildings: null,
+
   }),
   getters: {
     getUserProfile: (state: UserInfos): null | UserProfile => {
@@ -21,13 +27,31 @@ export const useUserStore = defineStore('user-infos', {
     getAllRoles: (state: UserInfos): string[] | UserProfile => {
       return state.allRoles;
     },
-
+    getApartments: (state: UserInfos): null | Apartment[] => {
+      return state.userApartments;
+    },
+    getBuildings: (state: UserInfos): null | Building[] => {
+      return state.userBuildings;
+    },
   },
   actions: {
     updateUserProfile(profile: UserProfile): void {
       this.userProfile = profile;
-      this.userProfile.picture = 'http://127.0.0.1:8080' + this.userProfile.picture
     },
-
+    updateUserApartments(apartments: Apartment[]): void {
+      this.userApartments = apartments;
+    },
+    updateUserBuildings(buildings: Building[]): void {
+      this.userBuildings = buildings;
+    },
+    removeUserBuildings(): void {
+      this.userBuildings = null;
+    },
+    removeUserApartments(): void {
+      this.userApartments = null;
+    },
+    removeUserProfile(): void {
+      this.userProfile = null;
+    },
   }
 });

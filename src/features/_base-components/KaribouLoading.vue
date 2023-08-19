@@ -18,7 +18,7 @@
 
 <style scoped lang="scss">
 .karibou-loading{
-  position: absolute;
+  position: fixed;
   z-index: 100000;
   background: rgba(0,0,0,.5);
   top: 0 ;

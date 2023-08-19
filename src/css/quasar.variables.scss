@@ -30,16 +30,27 @@ $negative  : #C10015;
 $info      : #31CCEC;
 $warning   : #F2C037;
 
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+  list-style: none;
+  text-decoration: none;
 
+}
+body{
+margin: 0;
+  padding: 0;
+}
 :root{
   --fs-800: 18px;
   --fs-700: 22px;
   --fs-600: 21px;
   --fs-500: 18px;
   --fs-400: 16px;
-  --fs-300: 34px;
-  --fs-200: 34px;
-  --fs-100: 34px;
+  --fs-300: 14px;
+  --fs-200: 13px;
+  --fs-100: 12px;
 }
 
 @mixin media-min($_min-width) {
@@ -61,13 +72,13 @@ $warning   : #F2C037;
 @media screen and (min-width: 781px) {
   :root{
     --fs-800: 28px;
-    --fs-700: 22px;
+    --fs-700: 25px;
     --fs-600: 21px;
     --fs-500: 18px;
     --fs-400: 16px;
-    --fs-300: 34px;
-    --fs-200: 34px;
-    --fs-100: 34px;
+    --fs-300: 14px;
+    --fs-200: 13px;
+    --fs-100: 12px;
   }
 }
 

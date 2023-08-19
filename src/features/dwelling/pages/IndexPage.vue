@@ -1,31 +1,52 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref} from 'vue'
+import {onBeforeMount, onMounted, reactive, ref} from 'vue'
 import ListItem from 'src/features/_base-components/ListItem.vue';
 import ListItems from 'src/features/_base-components/listItems.vue';
 import ToggleBtn from 'src/features/_base-components/ToggleBtn.vue';
-import MyAvatar from 'src/features/_base-components/MyAvatar.vue';
+
 import {useStoreBaseFeatures} from 'stores/base-features';
 import {useUserStore} from 'src/features/_utils/user.store'
 import { userService} from 'src/_services';
 import {
   Building,
-  Apartment,
+  Apartment, CurBuildingDetails,
 } from 'src/utils/interfaces';
-import {storeToRefs} from 'pinia';
 import FormComponents from 'src/features/dwelling/components/FormComponents.vue';
+import BuildingDetails from 'src/features/dwelling/components/BuildingDetails.vue';
+import MyAvatarOptions from 'src/features/_base-components/MyAvatarOptions.vue';
+import {storeToRefs} from 'pinia';
 
 
 //import stores
 const baseFeatures = useStoreBaseFeatures();
-const userData = useUserStore();
+const userStore = useUserStore()
 
+let {getBuildings,getApartments,getUserProfile} = storeToRefs(userStore)
 //all user data ex: profile and current role
-const {getUserProfile} = storeToRefs(userData)
 
 //lifes cycles hooks
-onMounted( ():void => {
-  getApartments();
-  getSyndicBuildings()
+onBeforeMount( ():void => {
+  if(getApartments.value != null ){
+    userApartments = getApartments.value
+    console.log('1',getApartments.value)
+  }
+  if(getBuildings.value != null ){
+    userBuildings = getBuildings.value
+    console.log('2')
+  }
+
+})
+onMounted(async ()=>{
+  let roles = await  getUserProfile?.value?.roles
+
+  if(roles != undefined && roles.includes('ROLE_SYNDIC_EDIT') ){
+    getSyndicBuildings()
+    console.log(roles,'laaa')
+  }
+ else{
+    console.log(roles,'ici')
+    loadApartments();
+  }
 })
 
 //images slider
@@ -47,16 +68,28 @@ let userBuildings = reactive<Building[]>([])
 let userApartments = reactive<Apartment[]>([])
 
 //Get Appartments and building request from the APi
-function getApartments():void
+function loadApartments():void
 {
   baseFeatures.enableLoading()
 
   userService.getUserApartments()
     .then(<Response>(response:Response) => {
+      userStore.removeUserApartments()
+      userStore.removeUserBuildings()
+      userService.removeUserApartments
+      userService.removeUserBuildings
+
       userApartments = response.data;
-      userApartments.forEach((apart:Apartment )=>{
-        userBuildings.push(apart.building  )
-      })
+      console.log(userBuildings.length,'la of')
+      if(userBuildings.length === 0){
+        userApartments.forEach((apart:Apartment)=>{
+          userBuildings.push(apart.building  )
+        })
+      }
+      userService.saveUserBuildings(userBuildings)
+      userService.saveUserApartments(userApartments)
+      userStore.updateUserBuildings(userBuildings)
+      userStore.updateUserApartments(userBuildings)
       baseFeatures.disableLoading()
     })
     .catch((error) => {
@@ -71,16 +104,21 @@ function getSyndicBuildings():void
 {
   baseFeatures.enableLoading()
 
-  userService.getSyndicateBuildings()
-    .then(<Response>(response:Response) => {
-      userBuildings = response.data;
-      console.log(userBuildings)
-      baseFeatures.disableLoading()
-    })
-    .catch((error) => {
-      console.log('error', error);
-      baseFeatures.disableLoading()
-    })
+    userService.getSyndicateBuildings()
+      .then(<Response>(response:Response) => {
+        userStore.removeUserApartments()
+        userStore.removeUserBuildings()
+        userService.removeUserApartments
+        userService.removeUserBuildings
+        userBuildings = response.data;
+        userService.saveUserBuildings(userBuildings)
+        userStore.updateUserBuildings(userBuildings)
+        baseFeatures.disableLoading()
+      })
+      .catch((error) => {
+        console.log('error', error);
+        baseFeatures.disableLoading()
+      })
 
 }
 
@@ -101,6 +139,16 @@ function closeFormComponent(){
 }
 
 
+let currBuildingSelected = reactive<CurBuildingDetails>({
+  id:undefined,
+  label:undefined
+})
+//select the current building and show the building coponent
+function selectBuildingDetails(buildingId: number,buildingLabel:string):void{
+  getCurrFormToDisplay('building-details')
+  currBuildingSelected.id = buildingId
+  currBuildingSelected.label = buildingLabel
+}
 </script>
 <template>
   <q-page class="page_container row  justify-center">
@@ -109,11 +157,11 @@ function closeFormComponent(){
       :class="{mobile_form : displayForm}"
     >
       <div class="left_header">
-        <MyAvatar
+        <MyAvatarOptions
           class="avatar"
           @display-form ="getCurrFormToDisplay"
         >
-        </MyAvatar>
+        </MyAvatarOptions>
       </div>
       <ToggleBtn
         one-txt="imeuble"
@@ -129,7 +177,7 @@ function closeFormComponent(){
           :list-items="userBuildings"
         >
           <template
-            #item="{street,number,zipcode, city}"
+            #item="{id,street,number,zipcode, city}"
           >
             <ListItem >
               <template #icons>
@@ -163,6 +211,7 @@ function closeFormComponent(){
                   size="md"
                   text-color="primary"
                   icon="fa-solid fa-angle-right"
+                  @click="selectBuildingDetails(id, `${number} ${street}, ${city}`)"
                 />
               </template>
             </ListItem>
@@ -245,10 +294,20 @@ function closeFormComponent(){
     </div>
 
    <FormComponents
-     v-if="componentToDisplay !=  'none'"
+     v-if="componentToDisplay ===  'informations' ||
+     componentToDisplay === 'owner-inv' ||
+     componentToDisplay === 'tenant-inv'"
      @close-form="closeFormComponent()"
      :component="componentToDisplay"
    ></FormComponents>
+    <BuildingDetails
+      v-if="componentToDisplay ===  'building-details'"
+      :building-id="currBuildingSelected.id"
+      @close-form="closeFormComponent()"
+      :building-label="currBuildingSelected.label"
+    >
+
+    </BuildingDetails>
   </q-page>
 </template>
 
@@ -256,11 +315,11 @@ function closeFormComponent(){
 .page_container{
   width: 100%;
   display: flex;
-  min-height: 100vh;
   .mobile_form{
     display: none;
   }
   .left{
+
     flex: 2;
     padding: 50px 30px;
     .list-items{
@@ -282,7 +341,7 @@ function closeFormComponent(){
   }
   .right{
     display: none;
-
+    overflow-y: scroll;
     img{
       width: 100%;
       height: 100%;
@@ -303,9 +362,7 @@ function closeFormComponent(){
 }
 
 
-
-
-@media screen and (min-width: 1081px) {
+@media screen and (min-width: 977px) {
   .page_container{
     .mobile_form {
       display: block;

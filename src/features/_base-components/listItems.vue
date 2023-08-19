@@ -19,7 +19,7 @@ const { listItems } = toRefs(props);
 
 <style lang="scss" scoped>
 .list-item{
-  margin: 20px 0;
+  margin: 15px 0;
 }
 
 @media screen and (min-width: 981px) {}
