@@ -82,13 +82,15 @@ const emits = defineEmits(['currentAdvertisement'])
 
 <style lang="scss" scoped>
 .advertisement-item{
-  margin: 15px auto;
+  scale: 1;
+  margin: 5px auto;
   padding: 2px ;
   border: 1px solid #E8E8E8;
   max-width: 600px;
   height: 120px;
   width: 100%;
   border-radius: 10px;
+  min-width: 100px;
   .advertisement-item-infos {
     padding: 5px 12px;
     width: 100%;
@@ -100,12 +102,12 @@ const emits = defineEmits(['currentAdvertisement'])
       font-weight: 400;
     }
     .advertisement-item-title{
-      font-size: var(--fs-400);
+      font-size: var(--fs-300);
+
       font-weight: 500;
     }
     .advertisement-item-resume{
       max-width: 355px;
-      min-width: 100px;
       font-size: var(--fs-300);
       font-weight: 300;
       overflow: hidden;
@@ -114,7 +116,7 @@ const emits = defineEmits(['currentAdvertisement'])
     }
   }
 .advertisement-item-image{
-  max-width: 140px;
+  max-width: 77px;
   width: 100%;
   border-radius: 10px;
   height: 100%;
@@ -132,5 +134,20 @@ const emits = defineEmits(['currentAdvertisement'])
 }
 
 }
-
+@media screen and (min-width: 477px) {
+  .advertisement-item{
+    .advertisement-item-image{
+      max-width: 140px;
+    }
+  }
+}
+@media screen and (min-width: 977px) {
+  .advertisement-item{
+    scale: 1;
+    margin: 20px auto;
+    .advertisement-item-image{
+      max-width: 140px;
+    }
+  }
+}
 </style>

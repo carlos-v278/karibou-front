@@ -13,7 +13,6 @@ console.log(props.apartments)
 
 <template>
   <div
-
     class="building_illustration">
     <div class="building_header">
       <img class="img_header" src="@pub/images/svg/buildings-appartments/top-building.svg" alt="top-building">
@@ -30,7 +29,7 @@ console.log(props.apartments)
        >
 
          <img class="img" src="@pub/images/svg/buildings-appartments/building-window.svg"  alt="top-window">
-         <span class="flat-number">{{ index + 1 }}</span>
+         <span class="flat-number">{{ apartment.number}}</span>
        </div>
 
 

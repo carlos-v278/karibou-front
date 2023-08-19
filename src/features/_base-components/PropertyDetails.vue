@@ -17,12 +17,17 @@ const {title, type,icon,componentTitle} = toRefs(props)
       <q-icon
         :name="'fa-solid ' + icon"
         round
-        size="md"
+        size="sm"
         color="primary"
       />
       <div class="building_infos">
         <span class="buildig_street">{{ componentTitle }}</span>
         <span class="property_type" v-if="type">{{type}}</span>
+      </div>
+      <div class="actions">
+        <slot name="actions">
+
+        </slot>
       </div>
     </div>
     <div class="component_title">
@@ -37,7 +42,7 @@ const {title, type,icon,componentTitle} = toRefs(props)
   border-bottom: 1px solid $grey-dark;
   .property_details_header{
     display: flex;
-    gap: 15px;
+    gap: 20px;
     align-items: center;
     margin: 25px 0;
     .building_infos{
@@ -51,6 +56,9 @@ const {title, type,icon,componentTitle} = toRefs(props)
         font-size: var(--fs-300);
 
       }
+    }
+    .actions{
+      margin-left: auto;
     }
   }
   .component_title{

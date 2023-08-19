@@ -80,14 +80,23 @@ console.log(route.params.id , 'param id')
           type="Plusieurs type d’annonces peuvent être publié: vente, job, information"
 
         >
+          <template #actions>
+            <q-icon
+              name="fa-solid fa-plus"
+              round
+              size="sm"
+              color="primary"
+
+            />
+          </template>
         </PropertyDetails>
         <div class="list-items">
-        <AdvertisementCard
-        v-for="advertisement in buildingAdvertisements"
-        :key="advertisement.id"
-        :advertisement = advertisement
-        @current-advertisement="displayCurrentAdvert"
-        ></AdvertisementCard>
+          <AdvertisementCard
+            v-for="advertisement in buildingAdvertisements"
+            :key="advertisement.id"
+            :advertisement = advertisement
+            @current-advertisement="displayCurrentAdvert"
+          ></AdvertisementCard>
         </div>
       </div>
     </div>
@@ -139,6 +148,7 @@ console.log(route.params.id , 'param id')
 
 <style scoped lang="scss">
 .advertisements{
+
   width: 100%;
   display: flex;
   .mobile_form{

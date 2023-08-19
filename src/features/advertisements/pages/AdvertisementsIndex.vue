@@ -50,6 +50,15 @@ function closeFormComponent(){
           type="Selectionner un imeuble"
 
         >
+          <template #actions>
+            <q-icon
+              name="fa-solid fa-plus"
+              round
+              size="sm"
+              color="primary"
+
+            />
+          </template>
         </PropertyDetails>
         <div class="list-items">
           <ListItems
@@ -151,7 +160,10 @@ function closeFormComponent(){
 
     flex: 2;
     padding: 50px 30px;
-
+    .list-items{
+      max-width: 600px;
+      margin: 0 auto;
+    }
     .left_header{
       max-width:578px ;
       width: 100%;

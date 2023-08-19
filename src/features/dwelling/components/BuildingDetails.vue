@@ -167,6 +167,12 @@ function showComponent(component:string):void
           </template>
         </ListItem>
       </div>
+      <div
+        v-if="componentToDisplay === 'Détails de l\'imeuble'"
+        class="apartements_separation"
+      >
+        Les appartements de l'imeuble
+      </div>
       <building-apart-illustration
         v-if="componentToDisplay === 'Détails de l\'imeuble'"
       :apartments="buildingDetailsData.apartments"
@@ -256,6 +262,13 @@ function showComponent(component:string):void
       margin: 0 auto;
     }
   }
+}
+
+.apartements_separation{
+  border-bottom: 1px solid black;
+  font-weight: 500;
+  margin: 60px 0 50px;
+  font-size: var(--fs-400);
 }
 .building-members{
   max-width: 578px;

@@ -15,6 +15,7 @@ import FormComponents from 'src/features/dwelling/components/FormComponents.vue'
 import BuildingDetails from 'src/features/dwelling/components/BuildingDetails.vue';
 import MyAvatarOptions from 'src/features/_base-components/MyAvatarOptions.vue';
 import {storeToRefs} from 'pinia';
+import MyApartementDetails from 'src/features/dwelling/components/MyApartementDetails.vue';
 
 
 //import stores
@@ -27,7 +28,7 @@ let {getBuildings,getApartments,getUserProfile} = storeToRefs(userStore)
 //lifes cycles hooks
 onBeforeMount( ():void => {
   if(getApartments.value != null ){
-    userApartments = getApartments.value
+    userApartments.value = getApartments.value
     console.log('1',getApartments.value)
   }
   if(getBuildings.value != null ){
@@ -65,7 +66,7 @@ function getCurrentChoice(choice:string):void
 let userBuildings = reactive<Building[]>([])
 
 //Apartments of the user
-let userApartments = reactive<Apartment[]>([])
+let userApartments = ref<Apartment[]>([])
 
 //Get Appartments and building request from the APi
 function loadApartments():void
@@ -79,15 +80,15 @@ function loadApartments():void
       userService.removeUserApartments
       userService.removeUserBuildings
 
-      userApartments = response.data;
+      userApartments.value = response.data;
       console.log(userBuildings.length,'la of')
       if(userBuildings.length === 0){
-        userApartments.forEach((apart:Apartment)=>{
+        userApartments.value.forEach((apart:Apartment)=>{
           userBuildings.push(apart.building  )
         })
       }
       userService.saveUserBuildings(userBuildings)
-      userService.saveUserApartments(userApartments)
+      userService.saveUserApartments(userApartments.value)
       userStore.updateUserBuildings(userBuildings)
       userStore.updateUserApartments(userBuildings)
       baseFeatures.disableLoading()
@@ -148,6 +149,12 @@ function selectBuildingDetails(buildingId: number,buildingLabel:string):void{
   getCurrFormToDisplay('building-details')
   currBuildingSelected.id = buildingId
   currBuildingSelected.label = buildingLabel
+}
+
+let currentApartementSelected = ref <number| undefined >( undefined)
+function displayMyApartement(id):void{
+  currentApartementSelected.value = id
+  getCurrFormToDisplay('mon-appartement');
 }
 </script>
 <template>
@@ -222,7 +229,7 @@ function selectBuildingDetails(buildingId: number,buildingLabel:string):void{
           v-else
           :list-items="userApartments"
         >
-          <template #item="{number,floor}">
+          <template #item="{id,number,floor}">
             <ListItem >
               <template #icons>
                 <div class="icon row items-center justify-center">
@@ -256,6 +263,7 @@ function selectBuildingDetails(buildingId: number,buildingLabel:string):void{
                   size="md"
                   text-color="primary"
                   icon="fa-solid fa-angle-right"
+                  @click="displayMyApartement(id)"
                 />
               </template>
             </ListItem>
@@ -308,6 +316,11 @@ function selectBuildingDetails(buildingId: number,buildingLabel:string):void{
     >
 
     </BuildingDetails>
+    <MyApartementDetails
+      v-if="componentToDisplay ===  'mon-appartement'"
+      @close-form="closeFormComponent()"
+      :current-apartement=currentApartementSelected
+    ></MyApartementDetails>
   </q-page>
 </template>
 

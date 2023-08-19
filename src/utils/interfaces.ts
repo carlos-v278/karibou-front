@@ -16,7 +16,7 @@ export interface Apartment {
   floor?:number;
   number?:number;
   rent?:number;
-  owner?:string;
+  owner?: UserProfile;
   tenants?:string[];
 
 }
