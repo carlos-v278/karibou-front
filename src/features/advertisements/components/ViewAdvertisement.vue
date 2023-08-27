@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import {PropType} from 'vue';
 import {Advertisement} from 'src/utils/interfaces';
-import { Swiper, SwiperSlide } from "swiper/vue"
+import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation, Pagination, A11y,Scrollbar,Autoplay } from 'swiper/modules';
 // Import Swiper styles
 import 'swiper/scss';
@@ -82,9 +82,10 @@ const props = defineProps({
         <span class="tag">#sell</span>
       </div>
       <div class="bottom">
-        <p class="description">
-          {{advertisement.description}}
-        </p>
+
+        <div class="description" v-html="advertisement?.description">
+
+        </div>
 
         <div class="owner">
           <ListItem
@@ -148,7 +149,7 @@ const props = defineProps({
 <style scoped lang="scss">
 .advertisement-view{
   width: 100%;
-  border: 2px solid $grey-light;
+
   min-height: 120vh;
   .advertisement-view-header{
     max-height:380px;
@@ -221,7 +222,7 @@ const props = defineProps({
 
 @media screen and (min-width: 977px) {
   .advertisement-view{
-    width: 50%;
+    width: 100%;
     .advertisement-view-header{
       .priview{
         max-width: 75px;

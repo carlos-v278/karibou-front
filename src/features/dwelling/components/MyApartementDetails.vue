@@ -243,7 +243,7 @@ async function loadApartementDetails()
 <style lang="scss" scoped>
 .apartement-details{
   width: 100%;
-  border: 2px solid $grey-light;
+  min-height: 110vh;
   padding: 39px;
   .member_separation{
     border-bottom: 1px solid black;
@@ -260,7 +260,7 @@ async function loadApartementDetails()
 @media screen and (min-width: 977px) {
   .apartement-details{
     display: block;
-    width: 50%;
+    width: 100%;
 
   }
 }

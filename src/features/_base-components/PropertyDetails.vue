@@ -59,6 +59,9 @@ const {title, type,icon,componentTitle} = toRefs(props)
     }
     .actions{
       margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
   }
   .component_title{

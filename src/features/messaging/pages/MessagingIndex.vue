@@ -1,18 +1,32 @@
 <script setup lang="ts">
 import MyAvatarOptions from 'src/features/_base-components/MyAvatarOptions.vue';
-import {ref} from 'vue';
+import {onBeforeMount, reactive, ref} from 'vue';
 import FormComponents from 'src/features/_base-components/FormComponents.vue';
-import PropertyDetails from 'src/features/_base-components/PropertyDetails.vue';
 import ListItem from 'src/features/_base-components/ListItem.vue';
 import ListItems from 'src/features/_base-components/listItems.vue';
 import {useUserStore} from 'src/features/_utils/user.store';
 import {storeToRefs} from 'pinia';
-
+import { userService} from 'src/_services';
+import {Conversation} from 'src/utils/interfaces';
+import MyAvatar from 'src/features/_base-components/MyAvatar.vue';
+import ToggleBtn from 'src/features/_base-components/ToggleBtn.vue';
+import ChatMessage from "src/features/messaging/components/ChatMessage.vue";
 const userStore = useUserStore()
-
-let {getBuildings} = storeToRefs(userStore)
+onBeforeMount(()=>{
+  loadAllconversations();
+})
+let {getUserProfile} = storeToRefs(userStore)
 
 const slide = ref(1)
+
+//current choice for the toggle of building or apartments
+const currentChoice = ref('Message(s)')
+
+//function get emits from switch components
+function getCurrentChoice(choice:string):void
+{
+  currentChoice.value = choice
+}
 let displayForm = ref(false)
 let componentToDisplay = ref('none');
 
@@ -27,11 +41,35 @@ function closeFormComponent(){
   displayForm.value = false
 }
 
+let conversationsList =reactive<Conversation[]>([])
+function loadAllconversations():void
+{
+  userService.getAllConversations()
+    .then((res)=>{
+        console.log(res)
+      conversationsList = res?.data
+      conversationsList.forEach((conversation)=>{
+        conversation.participants?.forEach((participant)=>{
+          if(participant.id != getUserProfile.value?.id){
+            conversation.recipient = participant
+          }
+        })
+      })
+    }).catch((res)=>{
+      console.log(res.status)
+  })
+}
 
+let currentConversation = ref<Conversation>()
+function conversationSelected(conversation:Conversation):void
+{
+  currentConversation.value = conversation
+  getCurrFormToDisplay('message')
+}
 </script>
 
 <template>
-  <q-page class="advertisements row  justify-center">
+  <q-page class="messaging row  justify-center">
     <div
       class="left"
       :class="{mobile_form : displayForm}"
@@ -43,32 +81,26 @@ function closeFormComponent(){
         >
         </MyAvatarOptions>
       </div>
-      <div class="buildings-advertisement">
-        <PropertyDetails
-          icon='fa-solid fa-bullhorn'
-          component-title="Annonces du voisinages"
-          type="Selectionner un imeuble"
-
+      <div class="conversations">
+        <ToggleBtn
+          one-txt="Message(s)"
+          two-txt="Groupe(s)"
+          @current-choice="getCurrentChoice"
         >
-          <template #actions>
 
-          </template>
-        </PropertyDetails>
+        </ToggleBtn>
         <div class="list-items">
           <ListItems
-            :list-items="getBuildings"
+            v-if="currentChoice === 'Message(s)'"
+            :list-items="conversationsList"
           >
             <template
-              #item="{id,street,number,zipcode, city}"
+              #item="item "
             >
               <ListItem >
                 <template #icons>
                   <div class="icon row items-center justify-center">
-                    <q-icon
-                      name="fa-solid fa-building"
-                      round size="md"
-                      color="primary"
-                    />
+                    <my-avatar :picture="item.recipient?.picture"></my-avatar>
                   </div>
                 </template>
                 <template #infos>
@@ -76,14 +108,29 @@ function closeFormComponent(){
                   style="font-size: 13px; font-weight: 600;"
                   class="item-title"
                 >
-                  {{number}} {{street}}, {{zipcode}} {{city}}
+                   {{item.recipient?.firstname}} {{item.recipient?.lastname}}
                 </span>
                   <span
+                    v-if="item.recipient?.roles.includes('ROLE_OWNER_CREATE')"
                     style="font-size: 13px; font-weight: 300;"
                     class="items-baseline"
                   >
-                  Résidence
-                </span>
+                  Syndicat
+              </span>
+                  <span
+                    v-if="item.recipient?.roles.includes('ROLE_TENANT_CREATE')"
+                    style="font-size: 13px; font-weight: 300;"
+                    class="items-baseline"
+                  >
+                  Propriétaire
+              </span>
+                  <span
+                    v-if="item?.recipient?.roles.includes('ROLE_TENANT_EDIT')"
+                    style="font-size: 13px; font-weight: 300;"
+                    class="items-baseline"
+                  >
+                  locataire
+              </span>
                 </template>
                 <template v-slot:actions>
                   <q-btn
@@ -92,8 +139,8 @@ function closeFormComponent(){
                     color="white"
                     size="md"
                     text-color="primary"
-                    icon="fa-solid fa-angle-right"
-                    :to="`/buildings/${id}/annonces`"
+                    icon="fa-solid fa-message"
+                  @click="conversationSelected(item)"
                   />
                 </template>
               </ListItem>
@@ -139,13 +186,19 @@ function closeFormComponent(){
       @close-form="closeFormComponent()"
       :component="componentToDisplay"
     ></FormComponents>
+  <ChatMessage
+    v-if="componentToDisplay ===  'message'"
+    :conversation="currentConversation"
+    @close-form="closeFormComponent()"
+  >
 
+  </ChatMessage>
 
   </q-page>
 </template>
 
 <style scoped lang="scss">
-.advertisements{
+.messaging{
   width: 100%;
   display: flex;
   .mobile_form{
@@ -170,7 +223,7 @@ function closeFormComponent(){
 
       }
     }
-    .buildings-advertisement {
+    .conversations {
       max-width: 650px;
       margin: 0 auto;
     }
@@ -199,7 +252,7 @@ function closeFormComponent(){
 
 
 @media screen and (min-width: 977px) {
-  .advertisements{
+  .messaging{
     .mobile_form {
       display: block;
     }

@@ -62,7 +62,8 @@ const emits = defineEmits(['currentAdvertisement'])
     <div class="advertisement-item-infos">
         <span class="advertisement-item-type">{{ props.advertisement.type }} </span>
         <span class="advertisement-item-title">{{ props.advertisement.title }}</span>
-        <p class="advertisement-item-resume">{{ props.advertisement.description }}</p>
+        <p class="advertisement-item-resume"  v-html="props.advertisement?.description"
+        ></p>
 
     </div>
     <div class="advertisement-item-actions row justify-center no-wrap">

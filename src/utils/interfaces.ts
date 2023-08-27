@@ -136,5 +136,19 @@ export interface CurBuildingDetails{
   label?: string
 }
 
+export interface PostAdvertisement {
+  title?:string;
+  description?:string;
+  price?:number;
+  type?:string;
+  building?:string;
+  owner?:string;
+}
+export interface Conversation {
+  id?:number;
+  participants?: UserProfile[];
+  recipient?: UserProfile;
+}
+
 
 

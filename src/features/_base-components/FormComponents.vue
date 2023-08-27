@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import EditProfileInfos from 'src/features/dwelling/components/EditProfileInfos.vue';
+import DefaultForm from 'src/features/_base-components/DefaultForm.vue';
 import {onBeforeMount, reactive, ref} from 'vue';
 import {
   Apartment,
@@ -9,13 +9,40 @@ import {
   OwnerInfosInvit,
   OwnerInfosProperty,
   TenantInfosInvit,
-  UserProfileEdit
+  UserProfileEdit,
+  PostAdvertisement
 } from 'src/utils/interfaces';
 import {storeToRefs} from 'pinia';
 import {useUserStore} from 'src/features/_utils/user.store';
+import AddAdvertisement from "src/features/advertisements/components/AddAdvertisement.vue";
+import {useRoute} from "vue-router";
+
+const route = useRoute()
 
 //import stores
 const userData = useUserStore();
+
+onBeforeMount(()=>{
+  let tempOptionBuil: BuildingsOptions = {
+  }
+  let tempOptionApart: BuildingsOptions = {
+  }
+  getBuildings.value?.forEach((building : Building)=>{
+    tempOptionBuil.uriId = '/api/buildings/' + building.id
+    tempOptionBuil.label = `${building.number} ${building.street}, ${building.city} ${building.zipcode}`
+    buildingOptions = [...buildingOptions, tempOptionBuil];
+  })
+
+  getApartments.value?.forEach((apartment : Apartment)=>{
+    tempOptionApart.uriId = '/api/apartments/' + apartment.id
+    tempOptionApart.label = `Appartement  N°${apartment.number}, étage N°${apartment.floor} `
+    apartmentsOptions = [...apartmentsOptions, tempOptionApart];
+  })
+
+  advertisementForm.value.owner= '/api/users/' + getUserProfile.value?.id
+  advertisementForm.value.building= '/api/buildings/' + route.params.id
+  console.log(advertisementForm.value,'fezfz')
+})
 
 //all user data ex: profile and current role
 const {getUserProfile, getBuildings,getApartments} = storeToRefs(userData)
@@ -84,23 +111,6 @@ let currApartChoice = ref({
   uriId:'',
   label:''
 })
-onBeforeMount(()=>{
-  let tempOptionBuil: BuildingsOptions = {
-  }
-  let tempOptionApart: BuildingsOptions = {
-  }
-  getBuildings.value?.forEach((building : Building)=>{
-    tempOptionBuil.uriId = '/api/buildings/' + building.id
-    tempOptionBuil.label = `${building.number} ${building.street}, ${building.city} ${building.zipcode}`
-    buildingOptions = [...buildingOptions, tempOptionBuil];
-  })
-
-  getApartments.value?.forEach((apartment : Apartment)=>{
-    tempOptionApart.uriId = '/api/apartments/' + apartment.id
-    tempOptionApart.label = `Appartement  N°${apartment.number}, étage N°${apartment.floor} `
-    apartmentsOptions = [...apartmentsOptions, tempOptionApart];
-  })
-})
 
 function upCurrBuilChoice(apartmentIndex :number):void{
   ownerInfosInvit.properties[apartmentIndex].building = currBuildChoice.value.uriId
@@ -109,12 +119,40 @@ function upCurrBuilChoice(apartmentIndex :number):void{
 function upCurrApartChoice():void{
   tenantInfosInvit.location = currApartChoice.value.uriId
 }
+
+// advertisement form
+let advertisementForm = ref<PostAdvertisement>({
+  title : undefined,
+  description :'',
+  price : undefined,
+  type : undefined,
+  building : undefined,
+  owner: undefined,
+})
+let advertisementTypeOptions =ref([
+  'vente',
+  'job',
+  'information'
+])
+let formPictures = ref<File[] >([
+
+])
+function addAdvertisementPicture():void{
+  let newfile = {
+    lastModified: 0,
+    name: '',
+    webkitRelativePath: '',
+
+  }
+
+ formPictures.value.push(newfile as File)
+}
 </script>
 <template>
   <div
     class="components_container"
   >
-    <EditProfileInfos
+    <DefaultForm
       v-if="props.component === 'informations'"
       title="Modifier vos informations personnels"
       @go-back="emits('closeForm')"
@@ -186,8 +224,8 @@ function upCurrApartChoice():void{
           type="submit"
           color="primary"/>
       </template>
-    </EditProfileInfos>
-    <EditProfileInfos
+    </DefaultForm>
+    <DefaultForm
       v-if="props.component === 'owner-inv'"
       title="Inviter un propriétaire"
       @go-back="emits('closeForm')"
@@ -306,12 +344,12 @@ function upCurrApartChoice():void{
       <template #footer>
         <q-btn
           class="row-input btn-cta"
-          label="Modifier"
+          label="Inviter"
           type="submit"
           color="primary"/>
       </template>
-    </EditProfileInfos>
-    <EditProfileInfos
+    </DefaultForm>
+    <DefaultForm
       v-if="props.component === 'tenant-inv'"
       title="Inviter un locataire"
       @go-back="emits('closeForm')"
@@ -365,11 +403,112 @@ function upCurrApartChoice():void{
       <template #footer>
         <q-btn
           class="row-input btn-cta"
-          label="Modifier"
+          label="Inviter"
           type="submit"
           color="primary"/>
       </template>
-    </EditProfileInfos>
+    </DefaultForm>
+    <AddAdvertisement
+      v-if="props.component === 'add-advertisement'"
+      title="Ajouter une annonce"
+      @go-back="emits('closeForm')"
+      :request="{method:'post',url:`api/advertisements` }"
+      :form-data="advertisementForm"
+      :form-images="formPictures"
+    >
+      <template #main>
+        <q-input
+          class="row-input"
+          filled
+          type="text"
+          v-model="advertisementForm.title"
+          label="Titre"
+
+        />
+
+        <q-editor
+          v-model="advertisementForm.description"
+
+        ></q-editor>
+        <q-input
+          class="row-input"
+          filled
+          type="number"
+          :model-value="Number(advertisementForm.price)"
+          v-model.number="advertisementForm.price"
+          label="Prix"
+
+        />
+        <q-select
+          filled
+          dense
+          v-model="advertisementForm.type"
+          :options="advertisementTypeOptions"
+          label="Type"
+        />
+        <div class="form-drop_down">
+          <div class="form-drop_down-header">
+            <span class="drop_down_title">Images(s)</span>
+            <div class="actions">
+              <q-icon
+                @click="addAdvertisementPicture()"
+                class="btn-add-apartment cursor-pointer"
+                name="fa-solid fa-plus"
+                round size="xs"
+                color="primary"/>
+
+              <q-icon
+                class="btn-add-apartment cursor-pointer q-ml-md"
+                name="fa-solid fa-minus"
+                round size="xs"
+                @click="formPictures.pop()"
+                v-if="formPictures.length >0"
+                color="primary"/>
+
+            </div>
+          </div>
+          <q-separator />
+          <div class="form-drop_down-main q-pt-xs">
+            <ul
+              class="drop_down-row-container"
+            >
+              <li
+                v-for="(picture, index) in formPictures"
+                :key="index"
+                class="drop_down-row q-mb-md"
+              >
+                <q-file
+                  color="lime-11"
+                  bg-color="grey-light"
+                  filled
+                  label="Image"
+                  style="width: 100%"
+                  v-model="formPictures[index]"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="attachment" />
+                  </template>
+                </q-file>
+
+
+
+              </li>
+            </ul>
+          </div>
+
+        </div>
+
+
+
+      </template>
+      <template #footer>
+        <q-btn
+          class="row-input btn-cta"
+          label="Poster"
+          type="submit"
+          color="primary"/>
+      </template>
+    </AddAdvertisement>
   </div>
 </template>
 
@@ -397,7 +536,7 @@ function upCurrApartChoice():void{
 }
 @media screen and (min-width: 977px) {
   .components_container{
-    width: 50%;
+    width: 100%;
 
   }
 }

@@ -67,7 +67,7 @@ function emitsFormToDisplay(choice:string):void
             class="btn"
             flat
             color="white"
-            to="deconnexion"
+            :to="{name:'logout'}"
             text-color="secondary"
             icon="fa-solid fa-right-from-bracket"
             label="Déconnexion"
@@ -105,7 +105,7 @@ function emitsFormToDisplay(choice:string):void
       top: 130%;
       z-index: 1;
       right: 0;
-      max-width: 520px;
+      min-width: 230px;
       border:1px solid $primary ;
       background: white;
       padding: 10px 10px;

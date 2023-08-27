@@ -151,7 +151,6 @@ function updateProfileInfos(){
 <style scoped lang="scss">
 .perso-infos-form{
   position: relative;
-  border: 2px solid #F3F3F3;
   width: 100%;
   display: flex;
   flex-direction: column;

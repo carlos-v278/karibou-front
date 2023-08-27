@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import MyAvatarOptions from 'src/features/_base-components/MyAvatarOptions.vue';
 import {onBeforeMount, reactive, ref} from 'vue';
-import FormComponents from 'src/features/dwelling/components/FormComponents.vue';
+import FormComponents from 'src/features/_base-components/FormComponents.vue';
 import PropertyDetails from 'src/features/_base-components/PropertyDetails.vue';
 import {  useRoute } from 'vue-router'
 import {useStoreBaseFeatures} from 'stores/base-features';
@@ -56,7 +56,7 @@ function displayCurrentAdvert(advertisement :Advertisement):void{
   currentAdvertisement.value = advertisement
   getCurrFormToDisplay('advertisement')
 }
-console.log(route.params.id , 'param id')
+
 
 </script>
 
@@ -86,7 +86,16 @@ console.log(route.params.id , 'param id')
               round
               size="sm"
               color="primary"
-
+              class="cursor-pointer"
+              @click="getCurrFormToDisplay('add-advertisement')"
+            />
+            <q-icon
+              name="fa-solid fa-arrows-rotate"
+              round
+              size="sm"
+              color="primary"
+              class="cursor-pointer"
+              @click="loadBuildingDetails"
             />
           </template>
         </PropertyDetails>
@@ -100,8 +109,8 @@ console.log(route.params.id , 'param id')
         </div>
       </div>
     </div>
-    <div class="right" v-if="componentToDisplay === 'none'">
-      <div class="floating-cloud" >
+    <div class="right">
+      <div class="floating-cloud"   v-if="componentToDisplay === 'none'">
         <div class="cloud-1">
           <img src="@pub/images/svg/cloud-1.svg" alt="karibou-home-cloud">
         </div>
@@ -110,6 +119,7 @@ console.log(route.params.id , 'param id')
         </div>
       </div>
       <q-carousel
+        v-if="componentToDisplay === 'none'"
         class="carousel"
         animated
         v-model="slide"
@@ -128,21 +138,22 @@ console.log(route.params.id , 'param id')
         >
         </q-carousel-slide>
       </q-carousel>
+      <FormComponents
+        v-if="componentToDisplay ===  'informations' ||
+      componentToDisplay === 'owner-inv' ||
+      componentToDisplay === 'add-advertisement' ||
+      componentToDisplay === 'tenant-inv'"
+
+        @close-form="closeFormComponent()"
+        :component="componentToDisplay"
+      ></FormComponents>
+      <view-advertisement
+        :advertisement="currentAdvertisement"
+        v-if="componentToDisplay ===  'advertisement' && Object.keys(currentAdvertisement).length != 0"
+      >
+      </view-advertisement>
     </div>
-    <FormComponents
-      v-if="componentToDisplay ===  'informations' ||
-     componentToDisplay === 'owner-inv' ||
-     componentToDisplay === 'tenant-inv'"
-      @close-form="closeFormComponent()"
-      :component="componentToDisplay"
-    ></FormComponents>
-    <view-advertisement
 
-      :advertisement="currentAdvertisement"
-      v-if="componentToDisplay ===  'advertisement' && Object.keys(currentAdvertisement).length != 0"
-    >
-
-    </view-advertisement>
   </q-page>
 </template>
 
@@ -150,17 +161,15 @@ console.log(route.params.id , 'param id')
 .advertisements{
 
   width: 100%;
-  display: flex;
   .mobile_form{
     display: none;
   }
   .left{
 
-    flex: 2;
     padding: 50px 30px;
 
     .left_header{
-      max-width:578px ;
+      max-width:650px ;
       width: 100%;
       margin: 5px auto 45px;
       display: flex;
@@ -170,10 +179,15 @@ console.log(route.params.id , 'param id')
 
       }
     }
-
+    .buildings-advertisement {
+      max-width: 650px;
+      margin: 0 auto;
+    }
   }
   .right{
-    display: none;
+    position: relative;
+    width: 100%;
+
     overflow-y: scroll;
     img{
       width: 100%;
@@ -181,10 +195,13 @@ console.log(route.params.id , 'param id')
       object-fit: cover;
     }
     .cloud-1{
+      display: none;
+
       top:150px;
       left: 300px;
     }
     .cloud-2{
+      display: none;
       top:180px;
       left: 100px;
     }
@@ -197,16 +214,27 @@ console.log(route.params.id , 'param id')
 
 @media screen and (min-width: 977px) {
   .advertisements{
+
     .mobile_form {
       display: block;
     }
     .left{
-      flex: 1.5;
+      position: fixed;
+      max-height: 100%;
+      overflow: scroll;
+      width: 50%;
+      left: 0;
       padding:  50px 20px 50px 120px;
+      min-height: 100vh;
     }
     .right{
+      position: fixed;
+      max-height: 100%;
+      overflow: scroll;
+      width: 50%;
+      right: 0;
+      border-left: 2px solid $grey-light;
       display: block;
-      position: relative;
       flex: 1.60;
       min-height: 100vh;
       .carousel{
@@ -214,6 +242,7 @@ console.log(route.params.id , 'param id')
         height: 100vh;
       }
       .cloud-1 ,.cloud-2{
+        display: block;
         z-index: 1;
         max-width: 100px;
         width: 100%;

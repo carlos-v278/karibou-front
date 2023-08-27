@@ -53,7 +53,7 @@ async function loadBuildingDetails()
 }
 
 let currentFlatSelected = ref<number | undefined>(undefined)
-let componentToDisplay = ref('Détails de l\'imeuble')
+let componentToDisplay = ref('Détails de l\'immeuble')
 function getSelectedFlatEmit(currentFlat:number):void
 {
   currentFlatSelected.value = currentFlat;
@@ -96,10 +96,10 @@ function showComponent(component:string):void
         class="btn-back"
         label="back"
         name="fa-solid fa-arrow-left cursor-pointer"
-        @click="showComponent('Détails de l\'imeuble')"
+        @click="showComponent('Détails de l\'immeuble')"
       />
       <div
-        v-if="componentToDisplay === 'Détails de l\'imeuble'"
+        v-if="componentToDisplay === 'Détails de l\'immeuble'"
         class="building_actions" >
         <ListItem
         >
@@ -129,7 +129,7 @@ function showComponent(component:string):void
               size="md"
               text-color="primary"
               icon="fa-solid fa-angle-right"
-              @click="showComponent('Membres de l\'imeuble')"
+              @click="showComponent('Membres de l\'immeuble')"
             />
           </template>
         </ListItem>
@@ -168,13 +168,13 @@ function showComponent(component:string):void
         </ListItem>
       </div>
       <div
-        v-if="componentToDisplay === 'Détails de l\'imeuble'"
+        v-if="componentToDisplay === 'Détails de l\'immeuble'"
         class="apartements_separation"
       >
-        Les appartements de l'imeuble
+        Les appartements de l'immeuble
       </div>
       <building-apart-illustration
-        v-if="componentToDisplay === 'Détails de l\'imeuble'"
+        v-if="componentToDisplay === 'Détails de l\'immeuble'"
       :apartments="buildingDetailsData.apartments"
       @selcted-curr-flat="getSelectedFlatEmit"
       >
@@ -182,13 +182,13 @@ function showComponent(component:string):void
       <public-apartment-details
         v-if="componentToDisplay === 'Membres de l\'appartement'"
       :apartment="currentFlatSelected"
-        @close-apart-details="showComponent('Détails de l\'imeuble')"
+        @close-apart-details="showComponent('Détails de l\'immeuble')"
       >
 
       </public-apartment-details>
     <div class="building-members">
       <ListItems
-        v-if="componentToDisplay === 'Membres de l\'imeuble'"
+        v-if="componentToDisplay === 'Membres de l\'immeuble'"
         :list-items="buildingDetailsData?.allMembers"
       >
         <template
@@ -254,8 +254,9 @@ function showComponent(component:string):void
 <style lang="scss" scoped>
 .building-details{
   width: 100%;
-  border: 2px solid $grey-light;
+
   padding: 39px;
+
   .details-main{
     .building_actions{
       max-width: 80%;
@@ -277,7 +278,7 @@ function showComponent(component:string):void
 @media screen and (min-width: 977px) {
   .building-details{
     display: block;
-    width: 50%;
+    width: 100%;
 
   }
 }

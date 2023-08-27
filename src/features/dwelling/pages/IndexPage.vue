@@ -11,7 +11,7 @@ import {
   Building,
   Apartment, CurBuildingDetails,
 } from 'src/utils/interfaces';
-import FormComponents from 'src/features/dwelling/components/FormComponents.vue';
+import FormComponents from 'src/features/_base-components/FormComponents.vue';
 import BuildingDetails from 'src/features/dwelling/components/BuildingDetails.vue';
 import MyAvatarOptions from 'src/features/_base-components/MyAvatarOptions.vue';
 import {storeToRefs} from 'pinia';
@@ -32,7 +32,7 @@ onBeforeMount( ():void => {
     console.log('1',getApartments.value)
   }
   if(getBuildings.value != null ){
-    userBuildings = getBuildings.value
+    userBuildings.value = getBuildings.value
     console.log('2')
   }
 
@@ -54,7 +54,7 @@ onMounted(async ()=>{
 const slide = ref(1)
 
 //current choice for the toggle of building or apartments
-const currentChoice = ref('imeuble')
+const currentChoice = ref('Immeuble(s)')
 
 //function get emits from switch components
 function getCurrentChoice(choice:string):void
@@ -63,7 +63,7 @@ function getCurrentChoice(choice:string):void
 }
 
 //building of the user
-let userBuildings = reactive<Building[]>([])
+let userBuildings = ref<Building[]>([])
 
 //Apartments of the user
 let userApartments = ref<Apartment[]>([])
@@ -81,16 +81,16 @@ function loadApartments():void
       userService.removeUserBuildings
 
       userApartments.value = response.data;
-      console.log(userBuildings.length,'la of')
-      if(userBuildings.length === 0){
+      console.log(userBuildings?.value.length,'la of')
+      if(userBuildings.value.length === 0){
         userApartments.value.forEach((apart:Apartment)=>{
-          userBuildings.push(apart.building  )
+          userBuildings.value.push(apart.building  )
         })
       }
-      userService.saveUserBuildings(userBuildings)
+      userService.saveUserBuildings(userBuildings.value)
       userService.saveUserApartments(userApartments.value)
-      userStore.updateUserBuildings(userBuildings)
-      userStore.updateUserApartments(userBuildings)
+      userStore.updateUserBuildings(userBuildings.value)
+      userStore.updateUserApartments(userApartments.value)
       baseFeatures.disableLoading()
     })
     .catch((error) => {
@@ -111,9 +111,9 @@ function getSyndicBuildings():void
         userStore.removeUserBuildings()
         userService.removeUserApartments
         userService.removeUserBuildings
-        userBuildings = response.data;
-        userService.saveUserBuildings(userBuildings)
-        userStore.updateUserBuildings(userBuildings)
+        userBuildings.value = response.data;
+        userService.saveUserBuildings(userBuildings.value)
+        userStore.updateUserBuildings(userBuildings.value)
         baseFeatures.disableLoading()
       })
       .catch((error) => {
@@ -161,7 +161,7 @@ function displayMyApartement(id):void{
   <q-page class="page_container row  justify-center">
     <div
       class="left"
-      :class="{mobile_form : displayForm}"
+      :class="{left_mobile_form : displayForm}"
     >
       <div class="left_header">
         <MyAvatarOptions
@@ -171,8 +171,8 @@ function displayMyApartement(id):void{
         </MyAvatarOptions>
       </div>
       <ToggleBtn
-        one-txt="imeuble"
-        two-txt="appartement"
+        one-txt="Immeuble(s)"
+        two-txt="Appartement(s)"
         @current-choice="getCurrentChoice"
       >
 
@@ -180,7 +180,7 @@ function displayMyApartement(id):void{
       <div class="list-items">
           <!--        Building lists-->
         <ListItems
-          v-if="currentChoice === 'imeuble'"
+          v-if="currentChoice === 'Immeuble(s)'"
           :list-items="userBuildings"
         >
           <template
@@ -271,8 +271,11 @@ function displayMyApartement(id):void{
         </ListItems>
       </div>
     </div>
-    <div class="right" v-if="componentToDisplay === 'none'">
-      <div class="floating-cloud" >
+    <div
+      class="right"
+      :class="{right_mobile_form : displayForm}"
+    >
+      <div class="floating-cloud" v-if="componentToDisplay === 'none'">
         <div class="cloud-1">
           <img src="@pub/images/svg/cloud-1.svg" alt="karibou-home-cloud">
         </div>
@@ -281,6 +284,7 @@ function displayMyApartement(id):void{
         </div>
       </div>
       <q-carousel
+        v-if="componentToDisplay === 'none'"
         class="carousel"
         animated
         v-model="slide"
@@ -299,28 +303,29 @@ function displayMyApartement(id):void{
         >
         </q-carousel-slide>
       </q-carousel>
-    </div>
-
-   <FormComponents
-     v-if="componentToDisplay ===  'informations' ||
+      <FormComponents
+        v-if="componentToDisplay ===  'informations' ||
      componentToDisplay === 'owner-inv' ||
      componentToDisplay === 'tenant-inv'"
-     @close-form="closeFormComponent()"
-     :component="componentToDisplay"
-   ></FormComponents>
-    <BuildingDetails
-      v-if="componentToDisplay ===  'building-details'"
-      :building-id="currBuildingSelected.id"
-      @close-form="closeFormComponent()"
-      :building-label="currBuildingSelected.label"
-    >
+        @close-form="closeFormComponent()"
+        :component="componentToDisplay"
+      ></FormComponents>
+      <BuildingDetails
+        v-if="componentToDisplay ===  'building-details'"
+        :building-id="currBuildingSelected.id"
+        @close-form="closeFormComponent()"
+        :building-label="currBuildingSelected.label"
+      >
 
-    </BuildingDetails>
-    <MyApartementDetails
-      v-if="componentToDisplay ===  'mon-appartement'"
-      @close-form="closeFormComponent()"
-      :current-apartement=currentApartementSelected
-    ></MyApartementDetails>
+      </BuildingDetails>
+      <MyApartementDetails
+        v-if="componentToDisplay ===  'mon-appartement'"
+        @close-form="closeFormComponent()"
+        :current-apartement=currentApartementSelected
+      ></MyApartementDetails>
+    </div>
+
+
   </q-page>
 </template>
 
@@ -328,8 +333,11 @@ function displayMyApartement(id):void{
 .page_container{
   width: 100%;
   display: flex;
-  .mobile_form{
-    display: none;
+  .left_mobile_form{
+    display: none !important;
+  }
+  .right_mobile_form{
+    display: block !important;
   }
   .left{
 
@@ -353,18 +361,22 @@ function displayMyApartement(id):void{
     }
   }
   .right{
+    right: 0;
+    border: 2px solid $grey-light;
+    width: 100%;
     display: none;
-    overflow-y: scroll;
     img{
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
     .cloud-1{
+      display: none;
       top:150px;
       left: 300px;
     }
     .cloud-2{
+      display: none;
       top:180px;
       left: 100px;
     }
@@ -377,23 +389,36 @@ function displayMyApartement(id):void{
 
 @media screen and (min-width: 977px) {
   .page_container{
-    .mobile_form {
-      display: block;
+    .left_mobile_form{
+      display: block !important;
+    }
+    .right_mobile_form{
+      display: block !important;
     }
     .left{
-      flex: 1.5;
+
       padding:  50px 20px 50px 120px;
+      width: 50%;
+      min-height: 100vh;
+      position: fixed;
+      overflow: scroll;
+      max-height: 100%;
+      left: 0;
     }
     .right{
       display: block;
-      position: relative;
-      flex: 1.60;
+      width: 50%;
+      right: 0;
       min-height: 100vh;
+      position: fixed;
+      overflow: scroll;
+      max-height: 100%;
       .carousel{
         width: 100%;
         height: 100vh;
       }
       .cloud-1 ,.cloud-2{
+        display: block;
         z-index: 1;
         max-width: 100px;
         width: 100%;

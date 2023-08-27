@@ -41,10 +41,15 @@ const saveUserApartments = (apartments : Apartment[]):void=>{
 const removeUserApartments = ():void=>{
   localStorage.removeItem('userApartments')
 }
-const getLocalUserApartments = (): Apartment[] | undefined =>{
-  const userApartments: string | null  = localStorage.getItem('userApartments');
-  if(userApartments != null){
-    return JSON.parse(userApartments)
+const getLocalUserApartments = (): Apartment[] | undefined => {
+  const userApartments: string | null = localStorage.getItem('userApartments');
+  if (userApartments !== null && userApartments !== "undefined") {
+    try {
+      return JSON.parse(userApartments);
+    } catch (error) {
+      console.error("Error parsing userApartments:", error);
+      return undefined;
+    }
   }
   return undefined;
 }
@@ -53,7 +58,7 @@ const saveUserBuildings = (buildings : Building[]):void=>{
   if(userBuildings == null){
     localStorage.setItem('userBuildings', JSON.stringify(buildings))
   } else {
-    console.log('here  local',buildings)
+
     localStorage.removeItem('userBuildings')
     localStorage.setItem('userBuildings', JSON.stringify(buildings))
   }
@@ -61,16 +66,27 @@ const saveUserBuildings = (buildings : Building[]):void=>{
 const removeUserBuildings = ():void=>{
   localStorage.removeItem('userBuildings')
 }
-const getLocalUserBuildings = (): Building[] | undefined =>{
-  const userBuildings: string | null  = localStorage.getItem('userBuildings');
-  if(userBuildings != null ){
-    return JSON.parse(userBuildings)
+const getLocalUserBuildings = (): Building[] | undefined => {
+  const userBuildings: string | null = localStorage.getItem('userBuildings');
+  if (userBuildings != null) {
+    try {
+      return JSON.parse(userBuildings);
+    } catch (error) {
+      console.error("Error parsing userBuildings:", error);
+      return undefined;
+    }
   }
   return undefined;
 }
 
+
 const getSyndicateBuildings =<T>():Promise<T> =>{
   return Axios.get('/api/buildings');
+}
+
+// conversations
+const getAllConversations =<T>():Promise<T> =>{
+  return Axios.get('/api/conversations');
 }
 
 export const userService: {
@@ -86,6 +102,7 @@ export const userService: {
   getLocalUserProfile : () => UserProfile | undefined;
   getLocalUserApartments : () => Apartment[] | undefined;
   getLocalUserBuildings : () => Building[] | undefined;
+  getAllConversations: <T>() => Promise<T>;
 
 } ={
   getUserProfile,
@@ -100,4 +117,5 @@ export const userService: {
   getLocalUserApartments,
   getSyndicateBuildings,
   getLocalUserProfile,
+  getAllConversations,
 }

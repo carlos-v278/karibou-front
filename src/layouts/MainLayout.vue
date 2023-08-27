@@ -31,34 +31,24 @@ const route = useRoute()
 const navLinks = reactive<NavLinks[]>([
   {
     to:'/',
-    name:'home',
+    name:'dwelling',
     size:'sm',
     icon:'fa-solid fa-house'
   },
   {
-    to:'/login',
-    name:'messages',
+    to:'/messages',
+    name:'all_conversations',
     size:'sm',
     icon:'fa-solid fa-comments'
   },
-  {
-    to:'#',
-    name:'new',
-    size:'md',
-    icon:'fa-solid fa-plus'
-  },
+
   {
     to:'/buildings',
-    name:'buildings',
+    name:'all_advertisements',
     size:'sm',
     icon:'fa-solid fa-bullhorn'
   },
-  {
-    to:'/login',
-    name:'apartment',
-    size:'sm',
-    icon:'widgets'
-  },
+
 ])
 onBeforeMount(async ()=>{
   checkProfileExist();
@@ -108,14 +98,14 @@ function checkPathHeader():void{
 function checkApartmentsAndBuildings():void{
   const userApartments = userService.getLocalUserApartments()
   const userBuildings = userService.getLocalUserBuildings()
-  console.log(userBuildings, 'lal la')
+  console.log(userApartments,'appartement')
+  console.log(userBuildings,'appartement')
   if(userApartments !=undefined){
     userInfosStore.updateUserApartments(userApartments)
-    userInfosStore.updateUserBuildings(userBuildings)
 
   }
   if(userBuildings != undefined){
-
+    userInfosStore.updateUserBuildings(userBuildings)
   }
 }
 </script>
@@ -131,7 +121,7 @@ function checkApartmentsAndBuildings():void{
           <li v-for="(link,index) in navLinks" :key="index">
             <q-btn
               :size="link.size"
-              :to="link.to"
+              :to="{name:link.name}"
               color="white"
               text-color="primary"
               class="nav-link"
