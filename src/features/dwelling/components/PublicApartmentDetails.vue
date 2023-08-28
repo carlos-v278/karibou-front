@@ -1,17 +1,20 @@
 <script setup lang="ts">
-import {buildingService} from 'src/_services'
+import {buildingService, messagingService} from 'src/_services'
 import {onBeforeMount, ref} from 'vue';
 import {BuildingDetailsApartment} from 'src/utils/interfaces';
 import ListItem from 'src/features/_base-components/ListItem.vue';
 import ListItems from 'src/features/_base-components/listItems.vue';
 import MyAvatar from 'src/features/_base-components/MyAvatar.vue';
 import {useStoreBaseFeatures} from 'stores/base-features';
+import {notify} from "src/utils/utils";
+import {useRouter} from "vue-router";
 onBeforeMount(async ()=>{
   await loadApartmentsDetails();
 })
 const props = defineProps({
   apartment:Number
 })
+const router = useRouter()
 
 const emits = defineEmits(['closeApartDetails'])
 const apartmentsDetails = ref<BuildingDetailsApartment>()
@@ -26,6 +29,23 @@ async function loadApartmentsDetails(){
       console.log('error', error)
       useStoreBaseFeatures().disableLoading()
     })
+}
+function sendMessage(userId:number):void{
+  let bodyRequest={
+    participants: [userId]
+  }
+  useStoreBaseFeatures().enableLoading()
+  messagingService.newConversation(bodyRequest)
+    .then((res)=>{
+      console.log(res.data)
+      notify('Une conversation vient d\'être créée.','positive')
+      useStoreBaseFeatures().disableLoading()
+      router.push({name:'all_conversations'})
+    }).catch((res)=>{
+    useStoreBaseFeatures().disableLoading()
+    console.log(res)
+  })
+
 }
 </script>
 
@@ -68,17 +88,15 @@ async function loadApartmentsDetails(){
                 </span>
           </template>
           <template v-slot:actions>
-            <a :href="'mailto:' +apartmentsDetails?.owner.email">
-              <q-btn
-                round
-                unelevated
-                color="white"
-                size="md"
-                text-color="primary"
-                icon="fa-solid fa-comment"
-
-              />
-            </a>
+            <q-btn
+              round
+              unelevated
+              color="white"
+              size="md"
+              text-color="primary"
+              icon="fa-solid fa-message"
+              @click="sendMessage(apartmentsDetails?.owner.id)"
+            />
           </template>
         </ListItem>
         <ListItems
@@ -86,7 +104,7 @@ async function loadApartmentsDetails(){
           :list-items="apartmentsDetails?.tenants"
         >
           <template
-            #item="{firstname, lastname,picture,email}"
+            #item="{id,firstname, lastname,picture}"
           >
             <ListItem >
               <template #icons>
@@ -109,17 +127,15 @@ async function loadApartmentsDetails(){
                 </span>
               </template>
               <template v-slot:actions>
-                <a :href="'mailto:' +email">
-                  <q-btn
-                    round
-                    unelevated
-                    color="white"
-                    size="md"
-                    text-color="primary"
-                    icon="fa-solid fa-comment"
-
-                  />
-                </a>
+                <q-btn
+                  round
+                  unelevated
+                  color="white"
+                  size="md"
+                  text-color="primary"
+                  icon="fa-solid fa-message"
+                  @click="sendMessage(id)"
+                />
 
               </template>
             </ListItem>

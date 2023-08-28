@@ -150,5 +150,17 @@ export interface Conversation {
   recipient?: UserProfile;
 }
 
+export interface Message {
+  id?:number;
+  from?: string;
+  text?: string;
+  picture?: string;
+}
+export interface UserMessage {
+  id?:number;
+  username?: string;
+  message?: string;
+  picture?: string;
+}
 
 

@@ -81,7 +81,7 @@ function loadApartments():void
       userService.removeUserBuildings
 
       userApartments.value = response.data;
-      console.log(userBuildings?.value.length,'la of')
+
       if(userBuildings.value.length === 0){
         userApartments.value.forEach((apart:Apartment)=>{
           userBuildings.value.push(apart.building  )

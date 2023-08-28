@@ -18,7 +18,7 @@ const routes: RouteRecordRaw[] = [
     path: '/messages',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '',name:'all_conversations', component: () => import('@/features/messaging/pages/MessagingIndex.vue') },
+      { path: '',name:'all_conversations', component: () => import('@/features/messaging/pages/MyMessaging.vue') },
     ],
   },
 

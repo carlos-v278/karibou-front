@@ -10,14 +10,37 @@ import 'swiper/scss/pagination';
 import 'swiper/scss/scrollbar';
 import ListItem from 'src/features/_base-components/ListItem.vue';
 import MyAvatar from 'src/features/_base-components/MyAvatar.vue';
+import {messagingService} from "src/_services";
+import {notify} from "src/utils/utils";
+import {useRouter} from "vue-router";
+import {useStoreBaseFeatures} from "stores/base-features";
 
-
+const router = useRouter()
 const swiperModules = [Navigation, Pagination, Scrollbar, A11y,Autoplay];
 const props = defineProps({
   advertisement:{
     type: Object as PropType<Advertisement>
   }
 })
+
+function sendMessage(userId:number):void{
+  let bodyRequest={
+    participants: [userId]
+  }
+  useStoreBaseFeatures().enableLoading()
+  messagingService.newConversation(bodyRequest)
+    .then((res)=>{
+      console.log(res.data)
+      notify('Une conversation vient d\'être créée.','positive')
+      useStoreBaseFeatures().disableLoading()
+      router.push({name:'all_conversations'})
+    }).catch((res)=>{
+    useStoreBaseFeatures().disableLoading()
+    console.log(res)
+  })
+
+}
+
 </script>
 <template>
   <div class="advertisement-view">
@@ -126,17 +149,15 @@ const props = defineProps({
               </span>
             </template>
             <template v-slot:actions>
-              <a :href="'mailto:' +advertisement?.owner?.email">
-                <q-btn
-                  round
-                  unelevated
-                  color="white"
-                  size="md"
-                  text-color="primary"
-                  icon="fa-solid fa-envelope"
-                />
-
-              </a>
+              <q-btn
+                round
+                unelevated
+                color="white"
+                size="md"
+                text-color="primary"
+                icon="fa-solid fa-message"
+                @click="sendMessage(advertisement?.owner?.id)"
+              />
             </template>
           </ListItem>
         </div>

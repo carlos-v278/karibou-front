@@ -509,6 +509,38 @@ function addAdvertisementPicture():void{
           color="primary"/>
       </template>
     </AddAdvertisement>
+    <DefaultForm
+      v-if="props.component === 'add-conversation'"
+      title="Commencer une conversation avec "
+      @go-back="emits('closeForm')"
+      :request="{method:'post',url:'api/users/conversations'}"
+      :form-data="tenantInfosInvit"
+    >
+
+      <template #main>
+
+
+
+
+        <q-select
+          filled
+          dense
+          v-model="currApartChoice"
+          :options="apartmentsOptions"
+          @update:modelValue="upCurrApartChoice()"
+          label="Batiment"
+        />
+
+
+      </template>
+      <template #footer>
+        <q-btn
+          class="row-input btn-cta"
+          label="Inviter"
+          type="submit"
+          color="primary"/>
+      </template>
+    </DefaultForm>
   </div>
 </template>
 

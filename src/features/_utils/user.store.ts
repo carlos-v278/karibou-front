@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia';
-import {Apartment, Building, UserProfile} from 'src/utils/interfaces';
+import {Apartment, Building, Person, UserProfile} from 'src/utils/interfaces';
 interface UserInfos {
  userProfile: UserProfile | null;
   allRoles: string[];
   userApartments:  null | Apartment[];
   userBuildings:  null | Building[];
+  allUsersFromBuildings?: Person[];
 
 }
 
@@ -18,6 +19,7 @@ export const useUserStore = defineStore('user-infos', {
     ],
     userApartments: null,
     userBuildings: null,
+    allUsersFromBuildings: undefined
 
   }),
   getters: {
@@ -32,6 +34,9 @@ export const useUserStore = defineStore('user-infos', {
     },
     getBuildings: (state: UserInfos): null | Building[] => {
       return state.userBuildings;
+    },
+    getAllUsersFromBuildings: (state: UserInfos):  undefined| Person[] => {
+      return state.allUsersFromBuildings;
     },
   },
   actions: {
@@ -52,6 +57,12 @@ export const useUserStore = defineStore('user-infos', {
     },
     removeUserProfile(): void {
       this.userProfile = null;
+    },
+    updateAllUsersFromBuildings(allUsers : Person[]): void
+    {
+      this.allUsersFromBuildings?.forEach((oldMember:Person) =>{
+        this.allUsersFromBuildings = allUsers.filter((newMember:Person) => newMember.id != oldMember.id)
+      })
     },
   }
 });

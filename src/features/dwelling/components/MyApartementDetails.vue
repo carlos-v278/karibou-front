@@ -3,14 +3,17 @@ import {
   Apartment,
 } from 'src/utils/interfaces';
 
-import {buildingService} from 'src/_services';
+import {buildingService, messagingService} from 'src/_services';
 import {onBeforeMount, ref} from 'vue';
 import PropertyDetails from 'src/features/_base-components/PropertyDetails.vue';
 import ListItem from 'src/features/_base-components/ListItem.vue';
 import MyAvatar from 'src/features/_base-components/MyAvatar.vue';
 import ListItems from 'src/features/_base-components/listItems.vue';
 import {useStoreBaseFeatures} from 'stores/base-features';
+import {notify} from "src/utils/utils";
+import {useRouter} from "vue-router";
 
+const router = useRouter()
 const props = defineProps({
   currentApartement: {
     type: Number
@@ -39,6 +42,23 @@ async function loadApartementDetails()
     })
 }
 
+function sendMessage(userId:number):void{
+  let bodyRequest={
+    participants: [userId]
+  }
+  useStoreBaseFeatures().enableLoading()
+  messagingService.newConversation(bodyRequest)
+    .then((res)=>{
+      console.log(res.data)
+      notify('Une conversation vient d\'être créée.','positive')
+      router.push({name:'all_conversations'})
+      useStoreBaseFeatures().disableLoading()
+    }).catch((res)=>{
+      useStoreBaseFeatures().disableLoading()
+      console.log(res)
+    })
+
+}
 
 </script>
 
@@ -163,25 +183,22 @@ async function loadApartementDetails()
               </span>
           </template>
           <template v-slot:actions>
-            <a :href="'mailto:' +apartementDetailsData?.owner?.email">
-              <q-btn
-                round
-                unelevated
-                color="white"
-                size="md"
-                text-color="primary"
-                icon="fa-solid fa-envelope"
-
-              />
-
-            </a>
+            <q-btn
+              round
+              unelevated
+              color="white"
+              size="md"
+              text-color="primary"
+              icon="fa-solid fa-message"
+              @click="sendMessage(apartementDetailsData?.owner?.id)"
+            />
           </template>
         </ListItem>
         <ListItems
           :list-items="apartementDetailsData?.tenants"
         >
           <template
-            #item="{firstname, lastname,picture,email,roles}"
+            #item="{firstname, lastname,picture,id,roles}"
           >
             <ListItem >
               <template #icons>
@@ -219,18 +236,15 @@ async function loadApartementDetails()
               </span>
               </template>
               <template v-slot:actions>
-                <a :href="'mailto:' +email">
-                  <q-btn
-                    round
-                    unelevated
-                    color="white"
-                    size="md"
-                    text-color="primary"
-                    icon="fa-solid fa-envelope"
-
-                  />
-
-                </a>
+                <q-btn
+                  round
+                  unelevated
+                  color="white"
+                  size="md"
+                  text-color="primary"
+                  icon="fa-solid fa-message"
+                  @click="sendMessage(id)"
+                />
               </template>
             </ListItem>
           </template>

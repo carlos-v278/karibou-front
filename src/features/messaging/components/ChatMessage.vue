@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import {PropType, ref} from 'vue';
-import {Conversation} from 'src/utils/interfaces';
+import {PropType, ref, watch} from 'vue';
+import {Conversation, Message, UserMessage} from 'src/utils/interfaces';
 import MyAvatar from 'src/features/_base-components/MyAvatar.vue';
-const emits = defineEmits(['closeForm'])
+const emits = defineEmits(['closeForm', 'reRender'])
 import {useUserStore} from 'src/features/_utils/user.store'
 import {storeToRefs} from "pinia";
 
@@ -14,21 +14,38 @@ const props = defineProps({
     type:Object as PropType<Conversation>
   }
 })
+
+
+//init the connexion to the backend server socket
 let conn = new WebSocket(`ws://127.0.0.1:8081?room=${props.conversation?.id}`)
 
-const messages = ref([]);
-const inputMessage = ref('');
-const clientInformation = { username: getUserProfile.value?.firstname , message:'',picture:getUserProfile.value?.picture};
+//list all the messages from both users
+const messages = ref<Message[]>([]);
 
+
+//current user informations
+const currentUserConnected = ref<UserMessage>({
+  id: getUserProfile.value?.id,
+  username: getUserProfile.value?.firstname ,
+  message:'',
+  picture: getUserProfile.value?.picture
+});
+
+// method to open the socket tunel
 conn.onopen = function() {
   console.info("Connection established successfully");
 
 };
 
+//method which load all the message sent to the socket
 conn.onmessage = function(e) {
   let data = JSON.parse(e.data);
-
-  appendMessage(data.username, data.message, data.picture);
+  pushMessage(
+    data.id,
+    data.username,
+    data.message,
+    data.picture
+  );
 };
 
 conn.onerror = function(e) {
@@ -36,24 +53,37 @@ conn.onerror = function(e) {
   console.error(e);
 };
 
-function appendMessage(username :string, message :string, avatar:string) {
+//method whick help to push new message to all the messages with both
+function pushMessage(id:number, username :string, message :string, avatar:string) {
   const from = username === getUserProfile.value?.firstname ? 'me' : username;
-  messages.value.push({ id: messages.value.length, from, text: message, picture: avatar});
-  console.log(messages.value,'laa')
+  messages.value.push(
+    { id: id,
+      from,
+      text: message,
+      picture: avatar
+    });
+
 }
 
 function sendMessage() {
-  const msg = inputMessage.value;
-  if (!msg) {
-    alert("Please send something on the chat");
+  if (!currentUserConnected.value.message) {
+    alert("Veuillez remplir le champ");
     return;
   }
-  clientInformation.message = msg;
-  conn.send(JSON.stringify(clientInformation));
-  appendMessage(clientInformation.username, clientInformation.message,clientInformation.picture);
-  inputMessage.value = '';
+  conn.send(JSON.stringify(currentUserConnected.value));
+  pushMessage(
+    currentUserConnected.value.id,
+    currentUserConnected.value.username,
+    currentUserConnected.value.message,
+    currentUserConnected.value.picture
+  );
+  currentUserConnected.value.message = '';
 }
 
+watch(props, () => {
+  console.log('here')
+  emits('reRender')
+})
 
 
 
@@ -108,11 +138,19 @@ function sendMessage() {
           v-for="(message,index) in messages"
           :key="index"
           :name="message.from"
-          :avatar="message?.picture"
+
           :text="[message.text]"
           :sent="message.from ==='me' ? true:false"
-        />
+        >
+          <template #avatar>
+            <my-avatar
+              class="avatar"
+              :picture="message?.picture"
+            >
 
+            </my-avatar>
+          </template>
+      </q-chat-message>
       </div>
     </div>
     <div class="footer">
@@ -123,7 +161,7 @@ function sendMessage() {
         color="primary"
         bg-color="grey-light"
         class="input"
-        v-model="inputMessage"
+        v-model="currentUserConnected.message"
         @keyup.enter="sendMessage()"
         dense
       >
@@ -172,12 +210,16 @@ function sendMessage() {
       }
     }
   }
+
   .main{
     background: $grey-light;
     border-radius: 10px;
-    min-height: 80vh;
+    min-height: 70vh;
     .message_container{
       padding: 26px;
+      .avatar{
+      margin: 0 10px;
+      }
     }
   }
   .footer{
@@ -193,7 +235,7 @@ function sendMessage() {
 }
 @media screen and (min-width: 977px) {
   .conversation{
-    width: 50%;
+    width: 100%;
   }
 }
 </style>
