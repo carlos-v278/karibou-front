@@ -163,4 +163,11 @@ export interface UserMessage {
   picture?: string;
 }
 
+export interface RentReceipt {
+  id?:number;
+  month?: string;
+  apartment?: string;
+  file?: string;
+}
+
 

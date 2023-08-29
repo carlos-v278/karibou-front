@@ -84,6 +84,10 @@ const getSyndicateBuildings =<T>():Promise<T> =>{
   return Axios.get('/api/buildings');
 }
 
+const getAllRentReceipts =<T>():Promise<T> =>{
+  return Axios.get('/api/rent_receipts');
+}
+
 
 
 
@@ -100,6 +104,7 @@ export const userService: {
   getLocalUserProfile : () => UserProfile | undefined;
   getLocalUserApartments : () => Apartment[] | undefined;
   getLocalUserBuildings : () => Building[] | undefined;
+  getAllRentReceipts: <T>() => Promise<T>;
 
 
 } ={
@@ -115,5 +120,6 @@ export const userService: {
   getLocalUserApartments,
   getSyndicateBuildings,
   getLocalUserProfile,
+  getAllRentReceipts,
 
 }

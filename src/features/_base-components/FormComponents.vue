@@ -147,6 +147,15 @@ function addAdvertisementPicture():void{
 
  formPictures.value.push(newfile as File)
 }
+
+let newRentReceipt =ref({
+  apartment:0
+})
+function apartmentRentReceipt(){
+  let lenght= newRentReceipt.value.apartment.uriId.length
+  newRentReceipt.value.apartment = Number(newRentReceipt.value.apartment?.uriId.charAt(lenght -1))
+  console.log(newRentReceipt.value)
+}
 </script>
 <template>
   <div
@@ -396,7 +405,8 @@ function addAdvertisementPicture():void{
           v-model="currApartChoice"
           :options="apartmentsOptions"
           @update:modelValue="upCurrApartChoice()"
-          label="Batiment" />
+          label="Appartement"
+        />
 
 
       </template>
@@ -537,6 +547,36 @@ function addAdvertisementPicture():void{
         <q-btn
           class="row-input btn-cta"
           label="Inviter"
+          type="submit"
+          color="primary"/>
+      </template>
+    </DefaultForm>
+    <DefaultForm
+      v-if="props.component === 'new-receipt'"
+      title="Nouvelle quittance de loyer "
+      @go-back="emits('closeForm')"
+      :request="{method:'post',url:'api/rent_receipts'}"
+      :form-data="newRentReceipt"
+    >
+
+      <template #main>
+
+
+        <q-select
+          filled
+          dense
+          v-model="newRentReceipt.apartment"
+          :options="apartmentsOptions"
+          @update:modelValue="apartmentRentReceipt()"
+          label="Appartement"
+        />
+
+
+      </template>
+      <template #footer>
+        <q-btn
+          class="row-input btn-cta"
+          label="Creer"
           type="submit"
           color="primary"/>
       </template>

@@ -21,7 +21,13 @@ const routes: RouteRecordRaw[] = [
       { path: '',name:'all_conversations', component: () => import('@/features/messaging/pages/MyMessaging.vue') },
     ],
   },
-
+  {
+    path: '/quittances',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '',name:'all_rent_receipt', component: () => import('@/features/rent-receipt/pages/MyRentReceipts.vue') },
+    ],
+  },
   {
     path: '/connexion',
     component: () => import('layouts/MainLayout.vue'),
@@ -31,11 +37,6 @@ const routes: RouteRecordRaw[] = [
     path: '/deconnexion',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', name:'logout',component: () => import('@/features/authentication/pages/AuthLogout.vue') }],
-  },
-  {
-    path: '/test',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', name:'test',component: () => import('@/features/authentication/pages/TestRequest.vue') }],
   },
 
   // Always leave this as last one,

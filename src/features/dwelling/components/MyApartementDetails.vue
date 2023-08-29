@@ -115,6 +115,7 @@ function sendMessage(userId:number):void{
               size="md"
               text-color="primary"
               icon="fa-solid fa-angle-right"
+              :to="{name:'all_rent_receipt'}"
             />
           </template>
         </ListItem>

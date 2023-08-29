@@ -17,6 +17,11 @@
   "resolved" "https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.18.12.tgz"
   "version" "0.18.12"
 
+"@esbuild/linux-arm64@0.18.12":
+  "integrity" "sha512-JKgG8Q/LL/9sw/iHHxQyVMoQYu3rU3+a5Z87DxC+wAu3engz+EmctIrV+FGOgI6gWG1z1+5nDDbXiRMGQZXqiw=="
+  "resolved" "https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.18.12.tgz"
+  "version" "0.18.12"
+
 "@eslint-community/eslint-utils@^4.2.0", "@eslint-community/eslint-utils@^4.3.0":
   "integrity" "sha512-1/sA4dwrzBAyeUoQ6oxahHKmrZvsnLCg4RfxW3ZFGGmQkSNQPFNLV9CUEFQP1x9EYXHTo5p6xdhZM1Ne9p/AfA=="
   "resolved" "https://registry.npmjs.org/@eslint-community/eslint-utils/-/eslint-utils-4.4.0.tgz"
@@ -1097,6 +1102,16 @@
 "esbuild-darwin-arm64@0.14.54":
   "integrity" "sha512-OPafJHD2oUPyvJMrsCvDGkRrVCar5aVyHfWGQzY1dWnzErjrDuSETxwA2HSsyg2jORLY8yBfzc1MIpUkXlctmw=="
   "resolved" "https://registry.npmjs.org/esbuild-darwin-arm64/-/esbuild-darwin-arm64-0.14.54.tgz"
+  "version" "0.14.54"
+
+"esbuild-linux-arm64@0.14.51":
+  "integrity" "sha512-D9rFxGutoqQX3xJPxqd6o+kvYKeIbM0ifW2y0bgKk5HPgQQOo2k9/2Vpto3ybGYaFPCE5qTGtqQta9PoP6ZEzw=="
+  "resolved" "https://registry.npmjs.org/esbuild-linux-arm64/-/esbuild-linux-arm64-0.14.51.tgz"
+  "version" "0.14.51"
+
+"esbuild-linux-arm64@0.14.54":
+  "integrity" "sha512-WL71L+0Rwv+Gv/HTmxTEmpv0UgmxYa5ftZILVi2QmZBgX3q7+tDeOQNqGtdXSdsL8TQi1vIaVFHUPDe0O0kdig=="
+  "resolved" "https://registry.npmjs.org/esbuild-linux-arm64/-/esbuild-linux-arm64-0.14.54.tgz"
   "version" "0.14.54"
 
 "esbuild-plugin-alias-path@^2.0.2":
